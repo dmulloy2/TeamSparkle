@@ -1,0 +1,50 @@
+name: TeamSparkle
+main: net.dmulloy2.teamsparkle.TeamSparkle
+version: "${project.version}"
+author: dmulloy2
+description: Recruiting plugin that rewards players for bringing new players
+commands:
+  ts:
+    description: TeamSparkle main command
+    usage: /<command> <args>
+    aliases: [teamsparkle, sparkle]
+permissions:
+  teamsparkle.*:
+    description: Gives access to all TeamSparkle features
+    children:
+      teamsparkle.cmd.buy: true
+      teamsparkle.cmd.confirm: true
+      teamsparkle.cmd.givetokens: true
+      teamsparkle.cmd.help: true
+      teamsparkle.cmd.invite: true
+      teamsparkle.cmd.leaderboard: true
+      teamsparkle.cmd.reload: true
+      teamsparkle.cmd.shop: true
+      teamsparkle.cmd.stats: true
+  teamsparkle.cmd.buy:
+    description: Allows access to '/ts buy <item> <amount>'
+    default: true
+  teamsparkle.cmd.confirm:
+    description: Allows access to '/ts <pin>'
+    default: true
+  teamsparkle.cmd.givetokens:
+    description: Allows access to '/ts gt <pl> <tokens>'
+    default: false
+  teamsparkle.cmd.help:
+    description: Allows access to '/ts help [page]'
+    default: true
+  teamsparkle.cmd.invite:
+    description: Allows access to '/ts invite <player>'
+    default: true
+  teamsparkle.cmd.leaderboard:
+    description: Allows access to '/ts leaderboard [page]'
+    default: true
+  teamsparkle.cmd.reload:
+    description: Allows access to '/ts reload'
+    default: false
+  teamsparkle.cmd.shop:
+    description: Allows access to '/ts shop'
+    default: true
+  teamsparkle.cmd.stats:
+    description: Allows access to '/ts stats'
+    default: true

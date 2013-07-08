@@ -1,0 +1,38 @@
+# TeamSparkle Configuration
+# By: dmulloy2
+
+# Automatic Update Checker
+# boolean
+updateChecker: true
+
+# Shop Items
+# List ("<cost>:<command>;<message>")
+# Example: "1:give %p diamond 1; 1 diamond"
+# Where %p is the player's name
+# <message> appears on the shop list
+shopItems:
+
+# Reward for Sparkled player
+# List ("<command>")
+# Example: "give %p diamond 1"
+# Where %p is the player's name
+# <message> is sent to the player
+sparkledRewards:
+
+# Hourly reward for players
+# List ("<command>;<message>")
+# Example: "give %p diamond 1"
+# Where %p is the player's name
+# <message> is sent to the player
+hourlyRewards:
+
+# AutoSave task
+# enabled - boolean
+# interval - int (minutes)
+autoSave:
+  enabled: true
+  interval: 15
+  
+# Name of the server
+# name - string
+serverName: "The Server"
