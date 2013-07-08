@@ -35,7 +35,7 @@ public class CmdConfirm extends TeamSparkleCommand
 			SparkledInstance si = plugin.pinMap.get(player.getName());
 			if (pin == si.getPin())
 			{
-				plugin.rewardSparkledPlayer(si.getSparkler(), si.getSparkled());
+				plugin.rewardSparkledPlayer(si.getSparkled(), si.getSparkler());
 				return;
 			}
 			
