@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 
@@ -39,15 +40,23 @@ public class ShopManager
 	{
 		items.clear();
 		
-		for (int i = 0; i < plugin.getConfig().getStringList("shopItems").size(); i++)
+		List<String> configItems = plugin.getConfig().getStringList("shopItems");
+		if (! configItems.isEmpty())
 		{
-			String entry = plugin.getConfig().getStringList("shopItems").get(i);
-			int cost = Integer.parseInt(entry.substring(0, entry.indexOf(":")));
-			String command = entry.substring(entry.indexOf(":") + 1, entry.indexOf(";"));
-			String message = entry.substring(entry.indexOf(";") + 1);
+			for (int i = 0; i < plugin.getConfig().getStringList("shopItems").size(); i++)
+			{
+				String entry = plugin.getConfig().getStringList("shopItems").get(i);
+				int cost = Integer.parseInt(entry.substring(0, entry.indexOf(":")));
+				String command = entry.substring(entry.indexOf(":") + 1, entry.indexOf(";"));
+				String message = entry.substring(entry.indexOf(";") + 1);
 			
-			ShopItem item = new ShopItem(cost, command, message);
-			items.put(i, item);
+				ShopItem item = new ShopItem(cost, command, message);
+				items.put(i, item);
+			}
+		}
+		else
+		{
+			plugin.outConsole(Level.WARNING, "Error building shop list: Shop Item List cannot be empty!");
 		}
 	}
 	

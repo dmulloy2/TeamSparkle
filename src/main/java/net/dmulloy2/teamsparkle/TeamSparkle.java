@@ -18,7 +18,6 @@
 package net.dmulloy2.teamsparkle;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -213,7 +212,7 @@ public class TeamSparkle extends JavaPlugin
 		outConsole("Rewarding Sparkled player {0}. Sparkler: {1}", sparkledn, sparklern);
 		
 		Player sparkled = Util.matchPlayer(sparkledn);
-		List<String> commands = new ArrayList<String>();
+		List<String> commands = getConfig().getStringList("sparkledRewards");
 		if (! commands.isEmpty())
 		{
 			for (String command : commands)
@@ -222,6 +221,10 @@ public class TeamSparkle extends JavaPlugin
 			}
 			
 			sparkled.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkled.getName()));
+		}
+		else
+		{
+			outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list cannot be empty!", sparkledn);
 		}
 		
 		OfflinePlayer sparkler = Util.matchOfflinePlayer(sparklern);
