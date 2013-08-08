@@ -113,7 +113,8 @@ public class TeamSparkle extends JavaPlugin
 		}
 		
 		/** Hourly Rewards **/
-		new HourlyRewardTask().runTaskTimer(this, 72000L, 72000L);
+		if (! getConfig().getStringList("hourlyRewards").isEmpty())
+			new HourlyRewardTask().runTaskTimer(this, 72000L, 72000L);
 		
 		long finish = System.currentTimeMillis();
 		
