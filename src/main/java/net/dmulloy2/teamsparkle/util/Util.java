@@ -55,7 +55,7 @@ public class Util
 	
 	public static int generatePin()
 	{
-		return (random(9999));
+		return (random(999));
 	}
 
 	public static int random(int x)
