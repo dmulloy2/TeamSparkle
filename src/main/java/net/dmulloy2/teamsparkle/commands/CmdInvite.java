@@ -29,14 +29,14 @@ public class CmdInvite extends TeamSparkleCommand
 			err(getMessage("has_played_before"));
 			return;
 		}
-		
-		if (plugin.getSparkled().containsKey(args[0]))
+
+		if (plugin.getSparkled().containsValue(args[0]))
 		{
 			err(getMessage("already_invited"));
 			return;
 		}
 		
-		plugin.getSparkled().put(args[0], player.getName());
+		plugin.getSparkled().put(player.getName(), args[0]);
 
 		sendMessage(getMessage("invite_confirmed"), args[0]);
 	}

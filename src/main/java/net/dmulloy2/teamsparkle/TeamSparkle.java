@@ -20,6 +20,7 @@ package net.dmulloy2.teamsparkle;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 
@@ -61,7 +62,8 @@ public class TeamSparkle extends JavaPlugin
 	
 	private @Getter ShopManager shopManager;
 	
-	public @Getter HashMap<String, String> sparkled = new HashMap<String, String>();
+	/** Sparkled Player HashMap. Format: Sparkler, Sparkled **/
+	private @Getter HashMap<String, String> sparkled = new HashMap<String, String>();
 
     /** Update Checking **/
 	private double newVersion, currentVersion;
@@ -207,38 +209,61 @@ public class TeamSparkle extends JavaPlugin
 		}
 	}
 	
-	/** Rewards a new Recruit **/
-	public void rewardSparkledPlayer(String sparkledn, String sparklern)
+	public boolean isSparkled(Player sparkledPlayer)
 	{
-		outConsole("Rewarding Sparkled player {0}. Sparkler: {1}", sparkledn, sparklern);
-		
-		Player sparkled = Util.matchPlayer(sparkledn);
-		List<String> commands = getConfig().getStringList("sparkledRewards");
-		if (! commands.isEmpty())
+		for (Entry<String, String> entry : sparkled.entrySet())
 		{
-			for (String command : commands)
+			if (entry.getValue().equalsIgnoreCase(sparkledPlayer.getName()))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public String getSparkler(Player sparkledPlayer)
+	{
+		for (Entry<String, String> entry : sparkled.entrySet())
+		{
+			if (entry.getValue().equalsIgnoreCase(sparkledPlayer.getName()))
+				return entry.getKey();
+		}
+		
+		return null;
+	}
+	
+	public void rewardSparkledPlayer(Player sparkledPlayer)
+	{
+		String sparkler = getSparkler(sparkledPlayer);
+		if (sparkler != null)
+		{
+			List<String> commands = getConfig().getStringList("sparkledRewards");
+			if (! commands.isEmpty())
 			{
-				getServer().dispatchCommand(getServer().getConsoleSender(), command);
+				for (String command : commands)
+				{
+					getServer().dispatchCommand(getServer().getConsoleSender(), command);
+				}
+				
+				sparkledPlayer.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkledPlayer.getName()));
+			}
+			else
+			{
+				outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list cannot be empty!", sparkledPlayer.getName());
 			}
 			
-			sparkled.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkled.getName()));
+			OfflinePlayer sparklerp = Util.matchOfflinePlayer(sparkler);
+			
+			PlayerData data = playerDataCache.getData(sparkler);
+			data.setTokens(data.getTokens() + 1);
+			data.setTotalSparkles(data.getTotalSparkles() + 1);
+			
+			if (sparklerp.isOnline())
+			{
+				((Player)sparklerp).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkledPlayer.getName()));
+			}
+			
+			sparkled.remove(sparkler);
 		}
-		else
-		{
-			outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list cannot be empty!", sparkledn);
-		}
-		
-		OfflinePlayer sparkler = Util.matchOfflinePlayer(sparklern);
-		PlayerData data = playerDataCache.getData(sparkler);
-		data.setTokens(data.getTokens() + 1);
-		data.setTotalSparkles(data.getTotalSparkles() + 1);
-		
-		if (sparkler.isOnline())
-		{
-			((Player)sparkler).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkled.getName()));
-		}
-		
-		this.sparkled.remove(sparkledn);
 	}
 	
 	/** Gives a player an item **/

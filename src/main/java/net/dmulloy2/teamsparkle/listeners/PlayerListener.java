@@ -1,7 +1,5 @@
 package net.dmulloy2.teamsparkle.listeners;
 
-import java.util.Map.Entry;
-
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.data.PlayerData;
 
@@ -27,7 +25,7 @@ public class PlayerListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		PlayerData data = plugin.getPlayerDataCache().getData(player.getName());
 		if (data == null)
 		{
@@ -37,42 +35,19 @@ public class PlayerListener implements Listener
 			data.setTokens(0);
 		}
 		
-		if (! plugin.getSparkled().containsValue(player.getName()))
-			return;
-
-		String sparklern = null;
-			
-		for (Entry<String, String> entry : plugin.getSparkled().entrySet())
+		if (plugin.isSparkled(player))
 		{
-			if (entry.getValue().equalsIgnoreCase(player.getName()))
+			new BukkitRunnable()
 			{
-				sparklern = entry.getKey();
-			}
-		}
-		
-		if (sparklern == null)
-			return;
-
-		new SparkleRewardTask(player, sparklern).runTaskLater(plugin, 120L);
-	}
-	
-	public class SparkleRewardTask extends BukkitRunnable
-	{
-		private final Player sparkled;
-		private final String sparkler;
-		public SparkleRewardTask(Player sparkled, String sparkler)
-		{
-			this.sparkled = sparkled;
-			this.sparkler = sparkler;
-		}
-		
-		@Override
-		public void run()
-		{
-			if (sparkled != null && sparkled.isOnline())
-			{
-				plugin.rewardSparkledPlayer(sparkled.getName(), sparkler);
-			}
+				@Override
+				public void run()
+				{
+					if (player != null && player.isOnline())
+					{
+						plugin.rewardSparkledPlayer(player);
+					}
+				}
+			}.runTaskLater(plugin, 120L);
 		}
 	}
 }
