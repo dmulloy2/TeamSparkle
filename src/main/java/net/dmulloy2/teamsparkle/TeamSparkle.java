@@ -61,7 +61,7 @@ public class TeamSparkle extends JavaPlugin
 	
 	private @Getter ShopManager shopManager;
 	
-	public HashMap<String, SparkledInstance> pinMap = new HashMap<String, SparkledInstance>();
+	public @Getter HashMap<String, String> sparkled = new HashMap<String, String>();
 
     /** Update Checking **/
 	private double newVersion, currentVersion;
@@ -130,7 +130,7 @@ public class TeamSparkle extends JavaPlugin
 		playerDataCache.save();
 		
 		/** Clear HashMaps **/
-		pinMap.clear();
+		sparkled.clear();
 
 		/** Cancel tasks / services **/
 		getServer().getServicesManager().unregisterAll(this);
@@ -238,7 +238,7 @@ public class TeamSparkle extends JavaPlugin
 			((Player)sparkler).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkled.getName()));
 		}
 		
-		pinMap.remove(sparkledn);
+		this.sparkled.remove(sparkledn);
 	}
 	
 	/** Gives a player an item **/

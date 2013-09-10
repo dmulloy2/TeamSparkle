@@ -2,11 +2,8 @@ package net.dmulloy2.teamsparkle.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
-import net.dmulloy2.teamsparkle.SparkledInstance;
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.commands.CmdConfirm;
 import net.dmulloy2.teamsparkle.commands.CmdHelp;
 import net.dmulloy2.teamsparkle.commands.TeamSparkleCommand;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
@@ -90,19 +87,7 @@ public class CommandHandler implements CommandExecutor
 			String commandName = args[0];
 			for (int i = 1; i < args.length; i++)
 				argsList.add(args[i]);
-			
-			if (isInt(commandName))
-			{
-				if (isPIN(Integer.parseInt(commandName)))
-				{
-					new CmdConfirm(plugin).execute(sender, args);
-					return true;
-				}
-				
-				sender.sendMessage(FormatUtil.format(plugin.getMessage("error") + plugin.getMessage("invalid_pin")));
-				return true;
-			}
-			
+
 			for (TeamSparkleCommand command : registeredPrefixedCommands) 
 			{
 				if (commandName.equalsIgnoreCase(command.getName()) || command.getAliases().contains(commandName.toLowerCase()))
@@ -119,29 +104,5 @@ public class CommandHandler implements CommandExecutor
 		}
 		
 		return true;
-	}
-	
-	public boolean isInt(String arg)
-	{
-		try
-		{
-			Integer.parseInt(arg);
-			return true;
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-	}
-	
-	public boolean isPIN(int i)
-	{
-		for (Entry<String, SparkledInstance> entry : plugin.pinMap.entrySet())
-		{
-			if (entry.getValue().getPin() == i)
-				return true;
-		}
-		
-		return false;
 	}
 }
