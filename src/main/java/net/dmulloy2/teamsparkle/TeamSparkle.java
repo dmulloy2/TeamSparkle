@@ -241,7 +241,7 @@ public class TeamSparkle extends JavaPlugin
 			{
 				for (String command : commands)
 				{
-					getServer().dispatchCommand(getServer().getConsoleSender(), command);
+					getServer().dispatchCommand(getServer().getConsoleSender(), command.replaceAll("%p", sparkledPlayer.getName()));
 				}
 				
 				sparkledPlayer.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkledPlayer.getName()));
