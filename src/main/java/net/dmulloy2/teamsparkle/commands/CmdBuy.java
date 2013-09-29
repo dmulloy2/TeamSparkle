@@ -46,7 +46,7 @@ public class CmdBuy extends TeamSparkleCommand
 		}
 		
 		plugin.getShopManager().sendCommand(player, item);
-		data.setTokens(data.getTokens() - 1);
+		data.setTokens(data.getTokens() - item.getCost());
 
 		sendMessage(getMessage("shop_purchace"), 1, item.getMessage(), item.getCost());
 	}
