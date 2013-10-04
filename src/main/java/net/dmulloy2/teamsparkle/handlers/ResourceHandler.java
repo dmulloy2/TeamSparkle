@@ -15,21 +15,22 @@ import net.dmulloy2.teamsparkle.data.FileResourceLoader;
 public class ResourceHandler
 {
 	private ResourceBundle messages;
-	
+
 	public TeamSparkle plugin;
+
 	public ResourceHandler(TeamSparkle plugin, ClassLoader classLoader)
 	{
-		try 
+		try
 		{
 			messages = ResourceBundle.getBundle("messages", Locale.getDefault(), new FileResourceLoader(classLoader, plugin));
-		} 
+		}
 		catch (MissingResourceException ex)
 		{
 			plugin.getLogger().log(Level.SEVERE, "Could not find resource bundle: messages.properties");
 		}
 	}
-	
-	public ResourceBundle getMessages() 
+
+	public ResourceBundle getMessages()
 	{
 		return messages;
 	}

@@ -22,12 +22,12 @@ public class CmdGiveTokens extends TeamSparkleCommand
 		this.requiredArgs.add("tokens");
 		this.description = "Manually give tokens";
 		this.permission = Permission.CMD_GIVE_TOKENS;
-		
+
 		this.mustBePlayer = true;
 	}
 
 	@Override
-	public void perform() 
+	public void perform()
 	{
 		OfflinePlayer target = Util.matchOfflinePlayer(args[0]);
 		if (target == null)
@@ -35,21 +35,19 @@ public class CmdGiveTokens extends TeamSparkleCommand
 			err(getMessage("noplayer"));
 			return;
 		}
-		
+
 		PlayerData data = getPlayerData(target);
 		if (data == null)
 		{
 			err(getMessage("noplayer"));
 			return;
 		}
-		
+
 		int tokens = argAsInt(1, true);
 		if (tokens == -1)
-		{
 			return;
-		}
-		
+
 		data.setTokens(data.getTokens() + tokens);
-		sendMessage(getMessage("give_tokens"), tokens, target.getName());
+		sendpMessage(getMessage("give_tokens"), tokens, target.getName());
 	}
 }

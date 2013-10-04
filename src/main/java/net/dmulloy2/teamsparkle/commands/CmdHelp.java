@@ -37,7 +37,7 @@ public class CmdHelp extends PaginatedCommand
 		ret.append('\n'); // Force a new line
 		ret.append(FormatUtil.format(plugin.getMessage("help_promo")));
 		ret.append(FormatUtil.format(plugin.getMessage("help_promo_ln2")));
-		
+
 		return ret.toString();
 	}
 

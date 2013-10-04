@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.dmulloy2</groupId>
   <artifactId>teamsparkle</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <name>TeamSparkle</name>
   
   <properties>

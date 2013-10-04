@@ -17,12 +17,12 @@ public class CmdInvite extends TeamSparkleCommand
 		this.requiredArgs.add("player");
 		this.description = "Invite a newly sparkled player";
 		this.permission = Permission.CMD_INVITE;
-		
+
 		this.mustBePlayer = true;
 	}
 
 	@Override
-	public void perform() 
+	public void perform()
 	{
 		if (Util.hasPlayedBefore(args[0]))
 		{
@@ -35,9 +35,9 @@ public class CmdInvite extends TeamSparkleCommand
 			err(getMessage("already_invited"));
 			return;
 		}
-		
+
 		plugin.getSparkled().put(player.getName(), args[0]);
 
-		sendMessage(getMessage("invite_confirmed"), args[0]);
+		sendpMessage(getMessage("invite_confirmed"), args[0]);
 	}
 }

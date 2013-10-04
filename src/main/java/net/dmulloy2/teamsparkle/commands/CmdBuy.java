@@ -1,9 +1,9 @@
 package net.dmulloy2.teamsparkle.commands;
 
-import net.dmulloy2.teamsparkle.ShopItem;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.data.PlayerData;
 import net.dmulloy2.teamsparkle.permissions.Permission;
+import net.dmulloy2.teamsparkle.types.ShopItem;
 
 /**
  * @author dmulloy2
@@ -19,7 +19,7 @@ public class CmdBuy extends TeamSparkleCommand
 		this.requiredArgs.add("index");
 		this.description = "Purchace an item from the shop";
 		this.permission = Permission.CMD_BUY;
-		
+
 		this.mustBePlayer = true;
 	}
 
@@ -27,27 +27,26 @@ public class CmdBuy extends TeamSparkleCommand
 	public void perform()
 	{
 		PlayerData data = getPlayerData(player);
-		
+
 		int index = argAsInt(0, true);
 		if (index == -1)
 			return;
-		
-		ShopItem item = plugin.getShopManager().getItem(index);
+
+		ShopItem item = plugin.getShopHandler().getItem(index);
 		if (item == null)
 		{
 			err(getMessage("item_not_found"));
 			return;
 		}
-		
+
 		if (item.getCost() > data.getTokens())
 		{
 			err(getMessage("shop_insufficient_funds"));
 			return;
 		}
-		
-		plugin.getShopManager().sendCommand(player, item);
-		data.setTokens(data.getTokens() - item.getCost());
 
-		sendMessage(getMessage("shop_purchace"), 1, item.getMessage(), item.getCost());
+		plugin.getShopHandler().processPurchace(player, item);
+
+		sendpMessage(getMessage("shop_purchace"), 1, item.getMessage(), item.getCost());
 	}
 }

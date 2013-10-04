@@ -17,11 +17,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PlayerListener implements Listener
 {
 	private final TeamSparkle plugin;
+
 	public PlayerListener(TeamSparkle plugin)
 	{
 		this.plugin = plugin;
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
@@ -34,7 +35,7 @@ public class PlayerListener implements Listener
 			data.setTotalSparkles(0);
 			data.setTokens(0);
 		}
-		
+
 		if (plugin.isSparkled(player))
 		{
 			new BukkitRunnable()

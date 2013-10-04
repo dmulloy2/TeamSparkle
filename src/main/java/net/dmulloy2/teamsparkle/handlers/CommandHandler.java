@@ -17,28 +17,29 @@ import org.bukkit.command.PluginCommand;
  * @author dmulloy2
  */
 
-public class CommandHandler implements CommandExecutor 
+public class CommandHandler implements CommandExecutor
 {
 	private final TeamSparkle plugin;
-	// Only need the name of command prefix - all other aliases listed in plugin.yml will be usable
+	// Only need the name of command prefix - all other aliases listed in
+	// plugin.yml will be usable
 	private String commandPrefix;
 	private List<TeamSparkleCommand> registeredPrefixedCommands;
 	private List<TeamSparkleCommand> registeredCommands;
-	
+
 	public CommandHandler(TeamSparkle plugin)
 	{
 		this.plugin = plugin;
 		registeredCommands = new ArrayList<TeamSparkleCommand>();
 	}
-	
-	public void registerCommand(TeamSparkleCommand command) 
+
+	public void registerCommand(TeamSparkleCommand command)
 	{
 		PluginCommand pluginCommand = plugin.getCommand(command.getName());
 		if (pluginCommand != null)
 		{
 			pluginCommand.setExecutor(command);
 			registeredCommands.add(command);
-		} 
+		}
 		else
 		{
 			plugin.outConsole("Entry for command {0} is missing in plugin.yml", command.getName());
@@ -51,7 +52,7 @@ public class CommandHandler implements CommandExecutor
 			registeredPrefixedCommands.add(command);
 	}
 
-	public List<TeamSparkleCommand> getRegisteredCommands() 
+	public List<TeamSparkleCommand> getRegisteredCommands()
 	{
 		return registeredCommands;
 	}
@@ -61,34 +62,35 @@ public class CommandHandler implements CommandExecutor
 		return registeredPrefixedCommands;
 	}
 
-	public String getCommandPrefix() 
+	public String getCommandPrefix()
 	{
 		return commandPrefix;
 	}
 
-	public void setCommandPrefix(String commandPrefix) 
+	public void setCommandPrefix(String commandPrefix)
 	{
 		this.commandPrefix = commandPrefix;
 		registeredPrefixedCommands = new ArrayList<TeamSparkleCommand>();
 		plugin.getCommand(commandPrefix).setExecutor(this);
 	}
 
-	public boolean usesCommandPrefix() 
+	public boolean usesCommandPrefix()
 	{
 		return commandPrefix != null;
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> argsList = new ArrayList<String>();
-		
-		if (args.length > 0) 
+
+		if (args.length > 0)
 		{
 			String commandName = args[0];
 			for (int i = 1; i < args.length; i++)
 				argsList.add(args[i]);
 
-			for (TeamSparkleCommand command : registeredPrefixedCommands) 
+			for (TeamSparkleCommand command : registeredPrefixedCommands)
 			{
 				if (commandName.equalsIgnoreCase(command.getName()) || command.getAliases().contains(commandName.toLowerCase()))
 				{
@@ -97,12 +99,12 @@ public class CommandHandler implements CommandExecutor
 				}
 			}
 			sender.sendMessage(FormatUtil.format(plugin.getMessage("error") + plugin.getMessage("unknown_command"), args[0]));
-		} 
-		else 
+		}
+		else
 		{
 			new CmdHelp(plugin).execute(sender, args);
 		}
-		
+
 		return true;
 	}
 }

@@ -17,15 +17,16 @@ public abstract class PaginatedCommand extends TeamSparkleCommand
 	}
 
 	protected int linesPerPage = 10;
-	
+
 	int pageArgIndex = 0;
-	
+
+	@Override
 	public void perform()
 	{
 		int index = 1;
-		if (this.args.length > pageArgIndex) 
+		if (this.args.length > pageArgIndex)
 		{
-			try 
+			try
 			{
 				index = Integer.parseInt(args[pageArgIndex]);
 				if (index < 1 || index > getPageCount())
@@ -36,17 +37,17 @@ public abstract class PaginatedCommand extends TeamSparkleCommand
 				err(plugin.getMessage("error-invalid-page"), args[0]);
 				return;
 			}
-			catch (IndexOutOfBoundsException ex) 
+			catch (IndexOutOfBoundsException ex)
 			{
 				err(plugin.getMessage("error-no-page-with-index"), args[0]);
 				return;
 			}
 		}
-		
+
 		for (String s : getPage(index))
 			sendMessage(s);
 	}
-	
+
 	/**
 	 * Gets the number of pages in the list associated with this command
 	 * 
@@ -56,18 +57,19 @@ public abstract class PaginatedCommand extends TeamSparkleCommand
 	{
 		return (getListSize() + linesPerPage - 1) / linesPerPage;
 	}
-	
+
 	/**
 	 * Gets the size of the list associated with this command
 	 * 
 	 * @return The size of the list
 	 */
 	public abstract int getListSize();
-	
+
 	/**
 	 * Gets all of the page lines for the specified page index
 	 * 
-	 * @param index The page index
+	 * @param index
+	 *            The page index
 	 * @return List of page lines
 	 */
 	public List<String> getPage(int index)
@@ -77,26 +79,29 @@ public abstract class PaginatedCommand extends TeamSparkleCommand
 		lines.addAll(getLines((index - 1) * linesPerPage, index * linesPerPage));
 		return lines;
 	}
-	
+
 	/**
 	 * Gets the header {@link String} for this command
 	 * 
-	 * @param index The page index
+	 * @param index
+	 *            The page index
 	 * @return String header for this page
 	 */
 	public abstract String getHeader(int index);
-	
+
 	/**
 	 * Gets all lines from startIndex up to but not including endIndex
 	 * 
-	 * @param startIndex The starting index in the list
-	 * @param endIndex The end index in the list
+	 * @param startIndex
+	 *            The starting index in the list
+	 * @param endIndex
+	 *            The end index in the list
 	 * @return All lines between start and end indexes
 	 */
 	public List<String> getLines(int startIndex, int endIndex)
 	{
 		List<String> lines = new ArrayList<String>();
-		for (int i = startIndex; i < endIndex && i < getListSize(); i++) 
+		for (int i = startIndex; i < endIndex && i < getListSize(); i++)
 		{
 			String line = getLine(i);
 			if (line != null)
@@ -104,12 +109,13 @@ public abstract class PaginatedCommand extends TeamSparkleCommand
 		}
 		return lines;
 	}
-	
+
 	/**
-	 * Gets a {@link String} representation of the line at the
-	 * specified index in the list
+	 * Gets a {@link String} representation of the line at the specified index
+	 * in the list
 	 * 
-	 * @param index The index of the entry in the list
+	 * @param index
+	 *            The index of the entry in the list
 	 * @return A string representation of the line
 	 */
 	public abstract String getLine(int index);

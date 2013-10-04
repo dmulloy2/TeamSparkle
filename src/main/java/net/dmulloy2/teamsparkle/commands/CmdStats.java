@@ -18,11 +18,11 @@ public class CmdStats extends TeamSparkleCommand
 	{
 		super(plugin);
 		this.name = "stats";
-		this.aliases.add("st");
+		this.aliases.add("info");
 		this.optionalArgs.add("player");
 		this.description = "Check your sparkly stats";
 		this.permission = Permission.CMD_STATS;
-		
+
 		this.mustBePlayer = true;
 	}
 
@@ -47,7 +47,7 @@ public class CmdStats extends TeamSparkleCommand
 		{
 			if (sender instanceof Player)
 			{
-				target = (Player)sender;
+				target = (Player) sender;
 			}
 			else
 			{
@@ -55,13 +55,14 @@ public class CmdStats extends TeamSparkleCommand
 				return;
 			}
 		}
+
 		PlayerData data = getPlayerData(target);
 		if (data == null)
 		{
 			err(getMessage("noplayer"));
 			return;
 		}
-		
+
 		sendMessage(getMessage("stats_header"), target.getName());
 		sendMessage(getMessage("stats_sparkles"), data.getTotalSparkles());
 		sendMessage(getMessage("stats_tokens"), data.getTokens());

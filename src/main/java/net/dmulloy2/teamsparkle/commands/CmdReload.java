@@ -22,14 +22,14 @@ public class CmdReload extends TeamSparkleCommand
 	public void perform()
 	{
 		sendMessage(getMessage("reloading"));
-		
+
 		long start = System.currentTimeMillis();
-		
+
 		plugin.reloadConfig();
-		plugin.getShopManager().updateShopList();
-		
+		plugin.getShopHandler().reload();
+
 		long finish = System.currentTimeMillis();
-		
+
 		sendMessage(getMessage("reload_complete"), finish - start);
 		outConsole("Reloaded TeamSparkle. Took {0} ms!", finish - start);
 	}
