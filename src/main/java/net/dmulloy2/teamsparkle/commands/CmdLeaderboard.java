@@ -164,10 +164,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				}
 			});
 
-			List<String> lines = new ArrayList<String>();
-			StringBuilder line = new StringBuilder();
-			line.append(FormatUtil.format(plugin.getMessage("leaderboard_header")));
-			lines.add(line.toString());
+			List<String> lines = new ArrayList<String>();;
 
 			int pos = 1;
 			for (Map.Entry<String, Integer> entry : sortedEntries)
@@ -181,7 +178,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 						PlayerData data2 = getPlayerData(player);
 						if (data2 != null)
 						{
-							line = new StringBuilder();
+							StringBuilder line = new StringBuilder();
 							line.append(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, player.getName(),
 									data2.getTotalSparkles()));
 
