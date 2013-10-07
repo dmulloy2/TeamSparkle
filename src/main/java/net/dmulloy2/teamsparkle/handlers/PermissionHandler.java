@@ -1,7 +1,7 @@
 package net.dmulloy2.teamsparkle.handlers;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.permissions.Permission;
+import net.dmulloy2.teamsparkle.types.Permission;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

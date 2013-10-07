@@ -1,7 +1,7 @@
 package net.dmulloy2.teamsparkle.commands;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.permissions.Permission;
+import net.dmulloy2.teamsparkle.types.Permission;
 
 /**
  * @author dmulloy2

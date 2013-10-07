@@ -1,4 +1,4 @@
-package net.dmulloy2.teamsparkle.permissions;
+package net.dmulloy2.teamsparkle.types;
 
 /**
  * @author dmulloy2
