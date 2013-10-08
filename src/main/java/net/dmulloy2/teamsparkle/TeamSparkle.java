@@ -32,14 +32,14 @@ import net.dmulloy2.teamsparkle.commands.CmdLeaderboard;
 import net.dmulloy2.teamsparkle.commands.CmdReload;
 import net.dmulloy2.teamsparkle.commands.CmdShop;
 import net.dmulloy2.teamsparkle.commands.CmdStats;
-import net.dmulloy2.teamsparkle.data.PlayerData;
-import net.dmulloy2.teamsparkle.data.PlayerDataCache;
 import net.dmulloy2.teamsparkle.handlers.CommandHandler;
 import net.dmulloy2.teamsparkle.handlers.LogHandler;
 import net.dmulloy2.teamsparkle.handlers.PermissionHandler;
 import net.dmulloy2.teamsparkle.handlers.ResourceHandler;
 import net.dmulloy2.teamsparkle.handlers.ShopHandler;
+import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
 import net.dmulloy2.teamsparkle.util.Util;
 

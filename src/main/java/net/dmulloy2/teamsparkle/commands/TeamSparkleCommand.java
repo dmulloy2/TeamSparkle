@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.data.PlayerData;
 import net.dmulloy2.teamsparkle.types.Permission;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
 
 import org.bukkit.OfflinePlayer;

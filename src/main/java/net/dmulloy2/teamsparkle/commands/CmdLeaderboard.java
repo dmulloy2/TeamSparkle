@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.data.PlayerData;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
 import net.dmulloy2.teamsparkle.util.Util;
 
@@ -196,6 +196,8 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			updating = false;
 
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
+			
+			plugin.getPlayerDataCache().save();
 		}
 	}
 

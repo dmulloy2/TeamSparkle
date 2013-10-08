@@ -1,4 +1,4 @@
-package net.dmulloy2.teamsparkle.data;
+package net.dmulloy2.teamsparkle.types;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

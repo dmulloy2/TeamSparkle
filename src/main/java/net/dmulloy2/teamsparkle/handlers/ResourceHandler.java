@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.data.FileResourceLoader;
+import net.dmulloy2.teamsparkle.io.FileResourceLoader;
 
 /**
  * @author dmulloy2

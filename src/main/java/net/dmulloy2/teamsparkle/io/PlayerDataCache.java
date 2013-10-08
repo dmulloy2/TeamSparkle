@@ -1,4 +1,4 @@
-package net.dmulloy2.teamsparkle.data;
+package net.dmulloy2.teamsparkle.io;
 
 import java.io.File;
 import java.util.Collections;
@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.Util;
 
 import org.bukkit.OfflinePlayer;

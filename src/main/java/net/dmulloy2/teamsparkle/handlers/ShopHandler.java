@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.data.PlayerData;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.types.ShopItem;
 
 import org.bukkit.entity.Player;

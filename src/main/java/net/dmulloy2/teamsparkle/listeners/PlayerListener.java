@@ -1,7 +1,7 @@
 package net.dmulloy2.teamsparkle.listeners;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.data.PlayerData;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

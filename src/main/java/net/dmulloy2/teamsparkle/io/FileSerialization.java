@@ -1,4 +1,4 @@
-package net.dmulloy2.teamsparkle.data;
+package net.dmulloy2.teamsparkle.io;
 
 import java.io.File;
 import java.util.Map;
