@@ -3,17 +3,28 @@ package net.dmulloy2.teamsparkle.util;
 import java.util.List;
 import java.util.Random;
 
+import net.dmulloy2.teamsparkle.TeamSparkle;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
+ * Base Util class
+ * 
  * @author dmulloy2
  */
 
 public class Util
 {
+	/**
+	 * Gets the OfflinePlayer from a given string
+	 * 
+	 * @param pl
+	 *            - String to match with a player
+	 * @return Player from the given string, null if none exists
+	 */
 	public static Player matchPlayer(String pl)
 	{
 		List<Player> players = Bukkit.matchPlayer(pl);
@@ -24,6 +35,13 @@ public class Util
 		return null;
 	}
 
+	/**
+	 * Gets the OfflinePlayer from a given string
+	 * 
+	 * @param pl
+	 *            - String to match with a player
+	 * @return Player from the given string, null if none exists
+	 */
 	public static OfflinePlayer matchOfflinePlayer(String pl)
 	{
 		if (matchPlayer(pl) != null)
@@ -38,32 +56,58 @@ public class Util
 		return null;
 	}
 
+	/**
+	 * Returns whether or not a player is banned
+	 * 
+	 * @param p
+	 *            - OfflinePlayer to check for banned status
+	 * @return Whether or not the player is banned
+	 */
 	public static boolean isBanned(OfflinePlayer p)
+	{
+		return isBanned(p.getName());
+	}
+
+	/**
+	 * Returns whether or not a player is banned
+	 * 
+	 * @param p
+	 *            - Player name to check for banned status
+	 * @return Whether or not the player is banned
+	 */
+	public static boolean isBanned(String p)
 	{
 		for (OfflinePlayer banned : Bukkit.getBannedPlayers())
 		{
-			if (p.getName().equalsIgnoreCase(banned.getName()))
+			if (p.equalsIgnoreCase(banned.getName()))
 				return true;
 		}
+
 		return false;
 	}
 
-	public static boolean hasPlayedBefore(String pl)
-	{
-		return (matchOfflinePlayer(pl) != null);
-	}
-
-	public static int generatePin()
-	{
-		return (random(999));
-	}
-
+	/**
+	 * Returns a random integer out of x
+	 * 
+	 * @param x
+	 *            - Integer the random should be out of
+	 * @return A random integer out of x
+	 */
 	public static int random(int x)
 	{
 		Random rand = new Random();
 		return rand.nextInt(x);
 	}
 
+	/**
+	 * Returns how far two locations are from each other
+	 * 
+	 * @param loc1
+	 *            - First location to compare
+	 * @param loc2
+	 *            - Second location to compare
+	 * @return Integer value of how far away they are
+	 */
 	public static int pointDistance(Location loc1, Location loc2)
 	{
 		int p1x = (int) loc1.getX();
@@ -83,5 +127,73 @@ public class Util
 		int ydist = y1 - y2;
 		int zdist = z1 - z2;
 		return Math.sqrt(xdist * xdist + ydist * ydist + zdist * zdist);
+	}
+
+	/**
+	 * Returns whether or not two locations are identical
+	 * 
+	 * @param loc1
+	 *            - First location
+	 * @param loc2
+	 *            - Second location
+	 * @return Whether or not the two locations are identical
+	 */
+	public static boolean checkLocation(Location loc, Location loc2)
+	{
+		return (loc.getBlockX() == loc2.getBlockX() && loc.getBlockY() == loc2.getBlockY() && loc.getBlockZ() == loc2.getBlockZ() && loc
+				.getWorld().getUID() == loc2.getWorld().getUID());
+	}
+
+	/**
+	 * Turns a {@link Location} into a string for debug purpouses
+	 * 
+	 * @param loc
+	 *            - {@link Location} to convert
+	 * @return String for debug purpouses
+	 */
+	public static String locationToString(Location loc)
+	{
+		StringBuilder ret = new StringBuilder();
+		ret.append("World: " + loc.getWorld().getName());
+		ret.append(" X: " + loc.getBlockX());
+		ret.append(" Y: " + loc.getBlockY());
+		ret.append(" Z: " + loc.getBlockZ());
+		return ret.toString();
+	}
+
+	/**
+	 * Gets a useful stack trace from a given {@link Throwable}
+	 * 
+	 * @param e
+	 *            - Base {@link Throwable}
+	 * @param circumstance
+	 *            - Circumstance in which the error occured
+	 * @return Useful stack trace
+	 */
+	public static String getUsefulStack(Throwable e, String circumstance)
+	{
+		StringBuilder ret = new StringBuilder();
+		ret.append("Encountered an exception while " + circumstance + ":" + '\n');
+		ret.append(e.getClass().getName() + ":" + e.getMessage() + '\n');
+		ret.append("Affected classes: " + '\n');
+
+		for (StackTraceElement ste : e.getStackTrace())
+		{
+			if (ste.getClassName().contains(TeamSparkle.class.getPackage().getName()))
+				ret.append('\t' + ste.toString() + '\n');
+		}
+
+		return ret.toString();
+	}
+	
+	/**
+	 * Returns whether or not a player has played before
+	 * 
+	 * @param p - Player name
+	 * @return Whether or not a player has played before
+	 */
+	public static boolean hasPlayedBefore(String p)
+	{
+		return matchOfflinePlayer(p) != null;
 	}
 }

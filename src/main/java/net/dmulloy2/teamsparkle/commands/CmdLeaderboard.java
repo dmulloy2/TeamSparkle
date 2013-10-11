@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
@@ -138,23 +139,26 @@ public class CmdLeaderboard extends TeamSparkleCommand
 		public void run()
 		{
 			updating = true;
-
+			
 			plugin.outConsole("Updating leaderboard...");
-
+			
 			long start = System.currentTimeMillis();
-
-			Map<String, PlayerData> data = plugin.getPlayerDataCache().getAllPlayerData();
-			HashMap<String, Integer> sparkleMap = new HashMap<String, Integer>();
-			for (Entry<String, PlayerData> entrySet : data.entrySet())
+			
+			Map<String, PlayerData> loadedData = plugin.getPlayerDataCache().getAllLoadedPlayerData();
+			Map<String, Integer> experienceMap = new HashMap<String, Integer>();
+			
+			for (Entry<String, PlayerData> entry : loadedData.entrySet())
 			{
-				String player = entrySet.getKey();
-				PlayerData data1 = entrySet.getValue();
-				int sparkles = data1.getTotalSparkles();
-				if (sparkles > 0)
-					sparkleMap.put(player, sparkles);
+				if (entry.getValue().getTotalSparkles()  > 0)
+				{
+					experienceMap.put(entry.getKey(), entry.getValue().getTotalSparkles());
+				}
 			}
 
-			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(sparkleMap.entrySet());
+//			loadedData.clear();
+//			loadedData = null;
+
+			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(experienceMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<String, Integer>>()
 			{
 				@Override
@@ -164,39 +168,46 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				}
 			});
 
-			List<String> lines = new ArrayList<String>();;
+			experienceMap.clear();
+			experienceMap = null;
 
 			int pos = 1;
-			for (Map.Entry<String, Integer> entry : sortedEntries)
+			for (Entry<String, Integer> entry : sortedEntries)
 			{
-				if (pos <= 10)
+				try
 				{
-					String string = entry.getKey();
-					OfflinePlayer player = Util.matchOfflinePlayer(string);
+					OfflinePlayer player = Util.matchOfflinePlayer(entry.getKey());
 					if (player != null)
 					{
-						PlayerData data2 = getPlayerData(player);
-						if (data2 != null)
+						PlayerData data = getPlayerData(player);
+						if (data != null)
 						{
-							StringBuilder line = new StringBuilder();
-							line.append(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, player.getName(),
-									data2.getTotalSparkles()));
-
-							lines.add(line.toString());
+							leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, player.getName(),
+									data.getTotalSparkles()));
 							pos++;
 						}
+						
+						data = null;
 					}
+					
+					player = null;
+				}
+				catch (Exception e)
+				{
+					plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e, "building leaderboard entry for " + entry.getKey()));
+					continue;
 				}
 			}
-
-			leaderboard = lines;
+			
+			sortedEntries.clear();
+			sortedEntries = null;
 
 			lastUpdateTime = System.currentTimeMillis();
 
 			updating = false;
 
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
-			
+
 			plugin.getPlayerDataCache().save();
 		}
 	}
