@@ -145,20 +145,20 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			long start = System.currentTimeMillis();
 			
 			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
-			Map<String, Integer> experienceMap = new HashMap<String, Integer>();
+			Map<String, Integer> sparkleMap = new HashMap<String, Integer>();
 
 			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
 				if (entry.getValue().getTotalSparkles()  > 0)
 				{
-					experienceMap.put(entry.getKey(), entry.getValue().getTotalSparkles());
+					sparkleMap.put(entry.getKey(), entry.getValue().getTotalSparkles());
 				}
 			}
 
 //			loadedData.clear();
 //			loadedData = null;
 
-			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(experienceMap.entrySet());
+			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(sparkleMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<String, Integer>>()
 			{
 				@Override
@@ -168,8 +168,8 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				}
 			});
 
-			experienceMap.clear();
-			experienceMap = null;
+			sparkleMap.clear();
+			sparkleMap = null;
 
 			int pos = 1;
 			for (Entry<String, Integer> entry : sortedEntries)
