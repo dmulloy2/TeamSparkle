@@ -144,10 +144,10 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			
 			long start = System.currentTimeMillis();
 			
-			Map<String, PlayerData> loadedData = plugin.getPlayerDataCache().getAllLoadedPlayerData();
+			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
 			Map<String, Integer> experienceMap = new HashMap<String, Integer>();
-			
-			for (Entry<String, PlayerData> entry : loadedData.entrySet())
+
+			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
 				if (entry.getValue().getTotalSparkles()  > 0)
 				{
