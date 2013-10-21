@@ -182,7 +182,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 						PlayerData data = getPlayerData(entry.getKey());
 						if (data != null)
 						{
-							leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, player.getName(),
+							leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, entry.getKey(),
 									data.getTotalSparkles()));
 							pos++;
 						}
