@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
+
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
-import net.dmulloy2.teamsparkle.util.Util;
-
-import org.bukkit.OfflinePlayer;
 
 /**
  * @author dmulloy2
@@ -47,6 +45,8 @@ public class CmdLeaderboard extends TeamSparkleCommand
 		if ((System.currentTimeMillis() - lastUpdateTime) > 18000L)
 		{
 			sendpMessage(getMessage("leaderboard_wait"));
+
+			leaderboard.clear();
 
 			new BuildLeaderboardThread();
 		}
@@ -176,10 +176,10 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			{
 				try
 				{
-					OfflinePlayer player = Util.matchOfflinePlayer(entry.getKey());
-					if (player != null)
-					{
-						PlayerData data = getPlayerData(player);
+//					OfflinePlayer player = Util.matchOfflinePlayer(entry.getKey());
+//					if (player != null)
+//					{
+						PlayerData data = getPlayerData(entry.getKey());
 						if (data != null)
 						{
 							leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, player.getName(),
@@ -188,14 +188,14 @@ public class CmdLeaderboard extends TeamSparkleCommand
 						}
 						
 						data = null;
-					}
-					
-					player = null;
+//					}
+//					
+//					player = null;
 				}
 				catch (Exception e)
 				{
-					plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e, "building leaderboard entry for " + entry.getKey()));
-					continue;
+//					plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e, "building leaderboard entry for " + entry.getKey()));
+//					continue;
 				}
 			}
 			
@@ -209,6 +209,15 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
 
 			plugin.getPlayerDataCache().save();
+
+			new BukkitRunnable()
+			{
+				@Override
+				public void run()
+				{
+					plugin.getPlayerDataCache().cleanupData();
+				}
+			}.runTaskLater(plugin, 2L);
 		}
 	}
 

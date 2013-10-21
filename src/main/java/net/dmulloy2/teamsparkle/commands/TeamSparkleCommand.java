@@ -111,6 +111,11 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		return plugin.getPlayerDataCache().getData(target.getName());
 	}
 
+	protected PlayerData getPlayerData(String key)
+	{
+		return plugin.getPlayerDataCache().getData(key);
+	}
+
 	// Send non prefixed message
 	protected final void sendMessage(String msg, Object... args)
 	{
