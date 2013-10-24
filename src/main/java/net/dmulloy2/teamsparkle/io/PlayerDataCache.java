@@ -1,8 +1,10 @@
 package net.dmulloy2.teamsparkle.io;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,9 +12,9 @@ import java.util.concurrent.ConcurrentMap;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.teamsparkle.util.Util;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 /**
  * @author dmulloy2
@@ -100,11 +102,21 @@ public class PlayerDataCache
 		return newData(player.getName());
 	}
 
-	public void cleanupData()
+	public void cleanupData() 
 	{
+		// Get all online players into an array list
+		List<String> online = new ArrayList<String>();
+		for (Player player : plugin.getServer().getOnlinePlayers())
+			online.add(player.getName());
+
+		// Actually cleanup the data
 		for (String key : getAllLoadedPlayerData().keySet())
-			if (!Util.matchOfflinePlayer(key).isOnline())
+			if (! online.contains(key))
 				removeData(key);
+
+		// Clear references
+		online.clear();
+		online = null;
 	}
 
 	private PlayerData loadData(final String key)
