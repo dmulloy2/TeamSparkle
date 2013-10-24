@@ -208,8 +208,10 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
 
-			plugin.getPlayerDataCache().save();
+			// Save data, but don't cleanup
+			plugin.getPlayerDataCache().save(false);
 
+			// Cleanup data sync
 			new BukkitRunnable()
 			{
 				@Override
