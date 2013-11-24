@@ -7,6 +7,7 @@ import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
+import net.dmulloy2.teamsparkle.util.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -41,9 +42,9 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 	public TeamSparkleCommand(TeamSparkle plugin)
 	{
 		this.plugin = plugin;
-		requiredArgs = new ArrayList<String>(2);
-		optionalArgs = new ArrayList<String>(2);
-		aliases = new ArrayList<String>(2);
+		this.requiredArgs = new ArrayList<String>(2);
+		this.optionalArgs = new ArrayList<String>(2);
+		this.aliases = new ArrayList<String>(2);
 	}
 
 	public abstract void perform();
@@ -73,32 +74,32 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 			invalidArgs();
 			return;
 		}
-		
-		if (! hasPermission())
+
+		if (!hasPermission())
 		{
 			err(plugin.getMessage("noperm"));
 			return;
 		}
 
-		perform();
+		try
+		{
+			perform();
+		}
+		catch (Throwable e)
+		{
+			err(plugin.getMessage("command_error"), e.getMessage());
+			plugin.getLogHandler().debug(Util.getUsefulStack(e, "executing command " + name));
+		}
 	}
 
 	protected final boolean isPlayer()
 	{
-		return (player != null);
+		return player != null;
 	}
 
 	private final boolean hasPermission()
 	{
-		return (plugin.getPermissionHandler().hasPermission(sender, permission));
-	}
-
-	protected final boolean argMatchesAlias(String arg, String... aliases)
-	{
-		for (String s : aliases)
-			if (arg.equalsIgnoreCase(s))
-				return true;
-		return false;
+		return plugin.getPermissionHandler().hasPermission(sender, permission);
 	}
 
 	protected final void err(String msg, Object... args)
@@ -116,25 +117,21 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		return plugin.getPlayerDataCache().getData(key);
 	}
 
-	// Send non prefixed message
 	protected final void sendMessage(String msg, Object... args)
 	{
 		sender.sendMessage(FormatUtil.format(msg, args));
 	}
 
-	// Send prefixed message
 	protected final void sendpMessage(String msg, Object... args)
 	{
 		sender.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
 
-	// Send message to the whole server
 	protected final void sendMessageAll(String msg, Object... args)
 	{
 		plugin.getServer().broadcastMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
 	}
 
-	// Send prefixed message
 	protected final void sendMessageTarget(String msg, Player target, Object... args)
 	{
 		target.sendMessage(plugin.getPrefix() + FormatUtil.format(msg, args));
@@ -171,15 +168,26 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		ret.append(name);
 
 		for (String s : optionalArgs)
-			ret.append(String.format(" &3[" + s + "]"));
+			ret.append(String.format(" &3[%s]", s));
 
 		for (String s : requiredArgs)
-			ret.append(String.format(" &3<" + s + ">"));
+			ret.append(String.format(" &3<%s>", s));
 
 		if (displayHelp)
 			ret.append(" &e" + description);
 
 		return FormatUtil.format(ret.toString());
+	}
+
+	protected final boolean argMatchesAlias(String arg, String... aliases)
+	{
+		for (String s : aliases)
+		{
+			if (arg.equalsIgnoreCase(s))
+				return true;
+		}
+
+		return false;
 	}
 
 	protected int argAsInt(int arg, boolean msg)

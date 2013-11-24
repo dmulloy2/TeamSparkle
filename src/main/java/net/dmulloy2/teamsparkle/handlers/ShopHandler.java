@@ -21,13 +21,11 @@ public class ShopHandler
 	private HashMap<Integer, ShopItem> items;
 
 	private final TeamSparkle plugin;
-
 	public ShopHandler(TeamSparkle plugin)
 	{
 		this.plugin = plugin;
 		this.items = new HashMap<Integer, ShopItem>();
-
-		updateShopList();
+		this.updateShopList();
 	}
 
 	public final List<String> getShopList()
@@ -61,7 +59,7 @@ public class ShopHandler
 	private final void updateShopList()
 	{
 		List<String> configItems = plugin.getConfig().getStringList("shopItems");
-		if (!configItems.isEmpty())
+		if (! configItems.isEmpty())
 		{
 			for (int i = 0; i < plugin.getConfig().getStringList("shopItems").size(); i++)
 			{
@@ -93,7 +91,10 @@ public class ShopHandler
 
 	public final ShopItem getItem(int index)
 	{
-		return items.get(index);
+		if (index <= items.size())
+			return items.get(index);
+
+		return null;
 	}
 
 	public final void sendCommand(Player player, ShopItem item)

@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PlayerListener implements Listener
 {
 	private final TeamSparkle plugin;
-
 	public PlayerListener(TeamSparkle plugin)
 	{
 		this.plugin = plugin;

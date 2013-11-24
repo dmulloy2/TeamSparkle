@@ -122,7 +122,7 @@ public class TeamSparkle extends JavaPlugin
 			}.runTaskTimerAsynchronously(this, interval, interval);
 		}
 
-		/** Hourly Rewards **/
+		/** Hourly Rewards **/ // TODO: Move this to async?
 		if (! getConfig().getStringList("hourlyRewards").isEmpty())
 			new HourlyRewardTask().runTaskTimer(this, 72000L, 72000L);
 
@@ -221,7 +221,7 @@ public class TeamSparkle extends JavaPlugin
 			}
 			else
 			{
-				outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list cannot be empty!", sparkledPlayer.getName());
+				outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list is empty!", sparkledPlayer.getName());
 			}
 
 			OfflinePlayer sparklerp = Util.matchOfflinePlayer(sparkler);
@@ -240,11 +240,11 @@ public class TeamSparkle extends JavaPlugin
 	}
 
 	/** Gives a player an item **/
-//  @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	public void giveItem(Player player, ItemStack stack)
 	{
 		player.getInventory().addItem(stack);
-//		player.updateInventory();
+		player.updateInventory();
 	}
 
 	/** Hourly Reward Task **/
