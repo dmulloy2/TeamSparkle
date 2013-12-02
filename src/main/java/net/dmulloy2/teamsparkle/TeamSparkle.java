@@ -77,6 +77,8 @@ public class TeamSparkle extends JavaPlugin
 	{
 		long start = System.currentTimeMillis();
 
+		logHandler = new LogHandler(this);
+
 		/** Configuration **/
 		saveDefaultConfig();
 		reloadConfig();
@@ -88,7 +90,6 @@ public class TeamSparkle extends JavaPlugin
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		shopHandler = new ShopHandler(this);
-		logHandler = new LogHandler(this);
 
 		playerDataCache = new PlayerDataCache(this);
 
