@@ -41,6 +41,7 @@ import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
+import net.dmulloy2.teamsparkle.util.TimeUtil;
 import net.dmulloy2.teamsparkle.util.Util;
 
 import org.bukkit.OfflinePlayer;
@@ -111,8 +112,8 @@ public class TeamSparkle extends JavaPlugin
 		/** Deploy Auto Save task **/
 		if (getConfig().getBoolean("autoSave.enabled"))
 		{
-			int interval = 20 * 60 * getConfig().getInt("autoSave.interval");
-			
+			long interval = TimeUtil.toTicks(60 * getConfig().getInt("autoSave.interval"));
+
 			new BukkitRunnable()
 			{
 				@Override
@@ -123,9 +124,10 @@ public class TeamSparkle extends JavaPlugin
 			}.runTaskTimerAsynchronously(this, interval, interval);
 		}
 
-		/** Hourly Rewards **/ // TODO: Move this to async?
+		/** Hourly Rewards **/
+		long interval = TimeUtil.toTicks(60 * 60); // 1 hour
 		if (! getConfig().getStringList("hourlyRewards").isEmpty())
-			new HourlyRewardTask().runTaskTimer(this, 72000L, 72000L);
+			new HourlyRewardTask().runTaskTimerAsynchronously(this, interval, interval);
 
 		long finish = System.currentTimeMillis();
 
@@ -169,8 +171,14 @@ public class TeamSparkle extends JavaPlugin
 		logHandler.debug(string, objects);
 	}
 
-	/** Get messages **/
-	public String getMessage(String string)
+	/**
+	 * Gets a message with a given key from the messages.properties
+	 * 
+	 * @param string
+	 *        - Message key
+	 * @return Associated message, or null if nonexistant
+	 */
+	public final String getMessage(String string)
 	{
 		try
 		{
@@ -178,12 +186,13 @@ public class TeamSparkle extends JavaPlugin
 		}
 		catch (MissingResourceException ex)
 		{
-			outConsole(Level.WARNING, getMessage("log_message_null"), string); // messageception :3
+			outConsole(Level.WARNING, getMessage("log_message_null"), string); // messageception
+																				// :3
 			return null;
 		}
 	}
 
-	public boolean isSparkled(Player sparkledPlayer)
+	public final boolean isSparkled(Player sparkledPlayer)
 	{
 		for (Entry<String, String> entry : sparkled.entrySet())
 		{
@@ -194,7 +203,7 @@ public class TeamSparkle extends JavaPlugin
 		return false;
 	}
 
-	public String getSparkler(Player sparkledPlayer)
+	private final String getSparkler(Player sparkledPlayer)
 	{
 		for (Entry<String, String> entry : sparkled.entrySet())
 		{
@@ -205,55 +214,94 @@ public class TeamSparkle extends JavaPlugin
 		return null;
 	}
 
-	public void rewardSparkledPlayer(Player sparkledPlayer)
+	/**
+	 * Processes a sparkled player
+	 * 
+	 * @param sparkled
+	 *        - Sparkled {@link Player}
+	 */
+	public final void handleSparkle(Player sparkled)
 	{
-		String sparkler = getSparkler(sparkledPlayer);
+		String sparkler = getSparkler(sparkled);
 		if (sparkler != null)
 		{
+			outConsole("Handling sparkle of: {0}. Sparkler: {1}", sparkled.getName(), sparkler);
+
+			// Commands for newly joined sparkleds
 			List<String> commands = getConfig().getStringList("sparkledRewards");
 			if (! commands.isEmpty())
 			{
 				for (String command : commands)
 				{
-					getServer().dispatchCommand(getServer().getConsoleSender(), command.replaceAll("%p", sparkledPlayer.getName()));
+					command = command.replaceAll("%p", sparkled.getName());
+					if (!getServer().dispatchCommand(getServer().getConsoleSender(), command))
+					{
+						// Oh no, something went wrong >:(
+						outConsole(Level.WARNING, "Could not execute command \"{0}\"", command);
+					}
+					else
+					{
+						debug("Executed command \"{0}\"", command);
+					}
 				}
-
-				sparkledPlayer.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkledPlayer.getName()));
 			}
 			else
 			{
-				outConsole(Level.WARNING, "Could not reward new player {0}: Rewards list is empty!", sparkledPlayer.getName());
+				debug("\"sparkledRewards\" list is empty! Not rewarding {0}", sparkled.getName());
 			}
 
-			OfflinePlayer sparklerp = Util.matchOfflinePlayer(sparkler);
+			// Welcome them
+			sparkled.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkled.getName()));
 
 			PlayerData data = playerDataCache.getData(sparkler);
-			data.setTokens(data.getTokens() + 1);
-			data.setTotalSparkles(data.getTotalSparkles() + 1);
-
-			if (sparklerp.isOnline())
+			if (data != null)
 			{
-				((Player) sparklerp).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkledPlayer.getName()));
+				// Reward the sparkler
+				data.setTokens(data.getTokens() + 1);
+				data.setTotalSparkles(data.getTotalSparkles() + 1);
+
+				debug("Setting total sparkles for {0} to {1}", sparkler, data.getTotalSparkles());
 			}
 
-			sparkled.remove(sparkler);
+			// Thank them, if online
+			OfflinePlayer sparklerp = Util.matchOfflinePlayer(sparkler);
+			if (sparklerp != null && sparklerp.isOnline())
+			{
+				((Player) sparklerp).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkled.getName()));
+			}
+		}
+		else
+		{
+			// Should never happen...
+			debug("Could not get sparkler for {0}", sparkled.getName());
 		}
 	}
 
-	/** Gives a player an item **/
+	/**
+	 * Gives a player an item, then refreshes their inventory
+	 * 
+	 * @param player
+	 *        - {@link Player} to give item to
+	 * @param stack
+	 *        - {@link ItemStack} to give the player
+	 */
 	@SuppressWarnings("deprecation")
-	public void giveItem(Player player, ItemStack stack)
+	public final void giveItem(Player player, ItemStack stack)
 	{
 		player.getInventory().addItem(stack);
 		player.updateInventory();
 	}
 
-	/** Hourly Reward Task **/
-	public class HourlyRewardTask extends BukkitRunnable
+	/**
+	 * Hourly Reward Task
+	 */
+	public final class HourlyRewardTask extends BukkitRunnable
 	{
 		@Override
 		public void run()
 		{
+			String message = getMessage("hourly_reward");
+			String serverName = getConfig().getString("serverName");
 			for (Player player : getServer().getOnlinePlayers())
 			{
 				List<String> rewards = getConfig().getStringList("hourlyRewards");
@@ -263,11 +311,11 @@ public class TeamSparkle extends JavaPlugin
 					String entry = rewards.get(rand);
 					if (entry != null)
 					{
-						String command = entry.split(";")[0].replaceAll("%p", player.getName());
+						String[] split = entry.split(";");
+						String command = split[0].replaceAll("%p", player.getName());
 						getServer().dispatchCommand(getServer().getConsoleSender(), command);
 
-						player.sendMessage(FormatUtil.format(getMessage("hourly_reward"), getConfig().getString("serverName"),
-								entry.split(";")[1]));
+						player.sendMessage(FormatUtil.format(message, serverName, split[1]));
 					}
 				}
 			}

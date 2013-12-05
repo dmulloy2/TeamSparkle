@@ -104,4 +104,16 @@ public final class TimeUtil
 		}
 		throw new Exception("badtime");
 	}
+
+	public static long toTicks(int seconds)
+	{
+//		return TimeUnit.SECONDS.toMillis(seconds);
+		return seconds * 20;
+	}
+
+	public static int toSeconds(long ticks)
+	{
+//		return (int) TimeUnit.MILLISECONDS.toSeconds(millis);
+		return (int) (ticks / 20);
+	}
 }

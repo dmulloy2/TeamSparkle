@@ -2,6 +2,7 @@ package net.dmulloy2.teamsparkle.listeners;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
+import net.dmulloy2.teamsparkle.util.TimeUtil;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,7 @@ public class PlayerListener implements Listener
 
 		if (plugin.isSparkled(player))
 		{
+			// Wait 6 seconds to reward
 			new BukkitRunnable()
 			{
 				@Override
@@ -44,10 +46,10 @@ public class PlayerListener implements Listener
 				{
 					if (player != null && player.isOnline())
 					{
-						plugin.rewardSparkledPlayer(player);
+						plugin.handleSparkle(player);
 					}
 				}
-			}.runTaskLater(plugin, 120L);
+			}.runTaskLater(plugin, TimeUtil.toTicks(6));
 		}
 	}
 }
