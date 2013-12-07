@@ -1,6 +1,7 @@
 package net.dmulloy2.teamsparkle.io;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
@@ -33,7 +35,7 @@ public class PlayerDataCache
 	{
 		this.folder = new File(plugin.getDataFolder(), folderName);
 
-		if (!folder.exists())
+		if (! folder.exists())
 			folder.mkdir();
 
 		this.data = new ConcurrentHashMap<String, PlayerData>(64, 0.75f, 64);
@@ -42,13 +44,19 @@ public class PlayerDataCache
 
 	public PlayerData getData(final String key)
 	{
-		PlayerData value = this.data.get(key);
+		PlayerData value = data.get(key);
 		if (value == null)
 		{
 			File file = new File(folder, getFileName(key));
 			if (file.exists())
 			{
 				value = loadData(key);
+				if (value == null)
+				{
+					file.delete();
+					return null;
+				}
+
 				addData(key, value);
 			}
 		}
@@ -70,13 +78,23 @@ public class PlayerDataCache
 	{
 		Map<String, PlayerData> data = new HashMap<String, PlayerData>();
 		data.putAll(this.data);
-		for (File file : folder.listFiles())
-			if (file.getName().contains(extension))
+
+		File[] files = folder.listFiles(new FileFilter()
+		{
+			@Override
+			public boolean accept(File file)
 			{
-				String fileName = trimFileExtension(file);
-				if (!isFileAlreadyLoaded(fileName, data))
-					data.put(fileName, loadData(fileName));
+				return file.getName().contains(extension);
 			}
+		});
+
+		for (File file : files)
+		{
+			String fileName = trimFileExtension(file);
+			if (! isFileAlreadyLoaded(fileName, data))
+				data.put(fileName, loadData(fileName));
+		}
+
 		return Collections.unmodifiableMap(data);
 	}
 
@@ -102,7 +120,7 @@ public class PlayerDataCache
 		return newData(player.getName());
 	}
 
-	public void cleanupData() 
+	public void cleanupData()
 	{
 		// Get all online players into an array list
 		List<String> online = new ArrayList<String>();
@@ -123,12 +141,21 @@ public class PlayerDataCache
 	{
 		File file = new File(folder, getFileName(key));
 
-		synchronized (file)
+		try
 		{
-			return FileSerialization.load(new File(folder, getFileName(key)), PlayerData.class);
+			synchronized (file)
+			{
+				return FileSerialization.load(new File(folder, getFileName(key)), PlayerData.class);
+			}
+		}
+		catch (Exception e)
+		{
+			plugin.outConsole(Level.WARNING, "Could not load PlayerData for \"{0}\": {1}", key, e.getMessage());
+			return null;
 		}
 	}
 
+	// Alias for save
 	public void save()
 	{
 		save(true);
@@ -140,24 +167,32 @@ public class PlayerDataCache
 		long start = System.currentTimeMillis();
 		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
 		{
-			File file = new File(folder, getFileName(entry.getKey()));
-
-			synchronized (file)
+			PlayerData data = entry.getValue();
+			if (data.shouldBeSaved())
 			{
-				FileSerialization.save(entry.getValue(), new File(folder, getFileName(entry.getKey())));
+				File file = new File(folder, getFileName(entry.getKey()));
+	
+				synchronized (file)
+				{
+					FileSerialization.save(entry.getValue(), new File(folder, getFileName(entry.getKey())));
+				}
 			}
 		}
 
-		if (cleanup) cleanupData();
+		if (cleanup)
+			cleanupData();
 
-		plugin.outConsole("Players saved! [{0} ms]", (System.currentTimeMillis() - start));
+		plugin.outConsole("Players saved! [{0} ms]", System.currentTimeMillis() - start);
 	}
 
 	private boolean isFileAlreadyLoaded(final String fileName, final Map<String, PlayerData> map)
 	{
 		for (String key : map.keySet())
+		{
 			if (key.equals(fileName))
 				return true;
+		}
+
 		return false;
 	}
 

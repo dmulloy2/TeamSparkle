@@ -2,14 +2,14 @@ package net.dmulloy2.teamsparkle.types;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
@@ -23,14 +23,7 @@ public class PlayerData implements ConfigurationSerializable
 	private int tokens;
 	private int totalSparkles;
 
-	private long timeOfLastUpdate;
-	private long onlineTime;
-	private long lastOnline;
-
-	private transient long lastUpdateTimeSpent;
-
-	@Setter(AccessLevel.NONE)
-	private Map<String, Object> data = new HashMap<String, Object>();
+	private List<String> invited = new ArrayList<String>();
 
 	public PlayerData()
 	{
@@ -47,34 +40,18 @@ public class PlayerData implements ConfigurationSerializable
 					if (field.getName().equals(entry.getKey()))
 					{
 						boolean accessible = field.isAccessible();
-						if (!accessible)
-							field.setAccessible(true);
+						field.setAccessible(true);
 
 						field.set(this, entry.getValue());
 
-						if (!accessible)
-							field.setAccessible(false);
+						field.setAccessible(accessible);
 					}
 				}
 			}
-			catch (IllegalArgumentException | IllegalAccessException ex)
+			catch (Exception ex)
 			{
 			}
 		}
-	}
-
-	/**
-	 * Any data put into this map needs to be inherently serializable, either
-	 * using ConfigurationSerializable or being a java primitive.
-	 * 
-	 * @param key
-	 *            Key to store the object under
-	 * @param object
-	 *            Object to store.
-	 */
-	public void putData(String key, Object object)
-	{
-		data.put(key, object);
 	}
 
 	@Override
@@ -111,7 +88,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 				else if (field.getType().isAssignableFrom(Collection.class))
 				{
-					if (!((Collection) field.get(this)).isEmpty())
+					if (! ((Collection) field.get(this)).isEmpty())
 						data.put(field.getName(), field.get(this));
 				}
 				else if (field.getType().isAssignableFrom(String.class))
@@ -121,8 +98,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 				else if (field.getType().isAssignableFrom(Map.class))
 				{
-
-					if (!((Map) field.get(this)).isEmpty())
+					if (! ((Map) field.get(this)).isEmpty())
 						data.put(field.getName(), field.get(this));
 				}
 				else
@@ -134,7 +110,7 @@ public class PlayerData implements ConfigurationSerializable
 				field.setAccessible(accessible);
 
 			}
-			catch (IllegalArgumentException | IllegalAccessException ex)
+			catch (Exception ex)
 			{
 			}
 		}
@@ -142,10 +118,11 @@ public class PlayerData implements ConfigurationSerializable
 		return data;
 	}
 
-	public void updateSpentTime()
+	/**
+	 * Only save files that need to be saved
+	 */
+	public final boolean shouldBeSaved()
 	{
-		long now = System.currentTimeMillis();
-		onlineTime = onlineTime + (now - ((lastUpdateTimeSpent > lastOnline) ? lastUpdateTimeSpent : lastOnline));
-		lastUpdateTimeSpent = now;
+		return tokens > 0 || totalSparkles > 0 || ! invited.isEmpty();
 	}
 }

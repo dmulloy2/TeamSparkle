@@ -17,7 +17,6 @@
  */
 package net.dmulloy2.teamsparkle;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
@@ -59,16 +58,13 @@ public class TeamSparkle extends JavaPlugin
 {
 	/** Handlers **/
 	private @Getter PermissionHandler permissionHandler;
-	private @Getter CommandHandler commandHandler;
 	private @Getter ResourceHandler resourceHandler;
+	private @Getter CommandHandler commandHandler;
 	private @Getter ShopHandler shopHandler;
 	private @Getter LogHandler logHandler;
 	
 	/** Data Cache **/
 	private @Getter PlayerDataCache playerDataCache;
-
-	/** Sparkled Player HashMap. Format: Sparkler, Sparkled **/
-	private @Getter HashMap<String, String> sparkled = new HashMap<String, String>();
 
 	/** Global Prefix **/
 	private @Getter String prefix = FormatUtil.format("&6[&4&lTS&6] ");
@@ -142,8 +138,7 @@ public class TeamSparkle extends JavaPlugin
 		/** Save Data **/
 		playerDataCache.save();
 
-		/** Clear Memory **/
-		sparkled.clear();
+//		sparkled.clear();
 		shopHandler.onDisable();
 
 		/** Cancel tasks / services **/
@@ -186,32 +181,39 @@ public class TeamSparkle extends JavaPlugin
 		}
 		catch (MissingResourceException ex)
 		{
-			outConsole(Level.WARNING, getMessage("log_message_null"), string); // messageception
-																				// :3
+			outConsole(Level.WARNING, getMessage("log_message_null"), string); // messageception :3
 			return null;
 		}
 	}
 
-	public final boolean isSparkled(Player sparkledPlayer)
+	public final boolean isSparkled(String name)
 	{
-		for (Entry<String, String> entry : sparkled.entrySet())
-		{
-			if (entry.getValue().equalsIgnoreCase(sparkledPlayer.getName()))
-				return true;
-		}
-
-		return false;
+		return getSparkler(name) != null;
 	}
 
-	private final String getSparkler(Player sparkledPlayer)
+	public final boolean isSparkled(Player player)
 	{
-		for (Entry<String, String> entry : sparkled.entrySet())
+		return getSparkler(player) != null;
+	}
+
+	public final String getSparkler(String name)
+	{
+		for (Entry<String, PlayerData> entry : playerDataCache.getAllLoadedPlayerData().entrySet())
 		{
-			if (entry.getValue().equalsIgnoreCase(sparkledPlayer.getName()))
-				return entry.getKey();
+			List<String> invited = entry.getValue().getInvited();
+			if (! invited.isEmpty())
+			{
+				if (invited.contains(name))
+					return entry.getKey();
+			}
 		}
 
 		return null;
+	}
+
+	public final String getSparkler(Player player)
+	{
+		return getSparkler(player.getName());
 	}
 
 	/**
@@ -234,7 +236,7 @@ public class TeamSparkle extends JavaPlugin
 				for (String command : commands)
 				{
 					command = command.replaceAll("%p", sparkled.getName());
-					if (!getServer().dispatchCommand(getServer().getConsoleSender(), command))
+					if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
 					{
 						// Oh no, something went wrong >:(
 						outConsole(Level.WARNING, "Could not execute command \"{0}\"", command);

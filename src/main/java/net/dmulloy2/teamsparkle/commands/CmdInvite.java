@@ -2,6 +2,7 @@ package net.dmulloy2.teamsparkle.commands;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
+import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.Util;
 
 /**
@@ -30,13 +31,15 @@ public class CmdInvite extends TeamSparkleCommand
 			return;
 		}
 
-		if (plugin.getSparkled().containsValue(args[0]))
+		PlayerData data = getPlayerData(player);
+
+		if (data.getInvited().contains(args[0]))
 		{
 			err(getMessage("already_invited"));
 			return;
 		}
 
-		plugin.getSparkled().put(player.getName(), args[0]);
+		data.getInvited().add(args[0]);
 
 		sendpMessage(getMessage("invite_confirmed"), args[0]);
 	}
