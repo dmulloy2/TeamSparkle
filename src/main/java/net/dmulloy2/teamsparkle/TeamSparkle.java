@@ -138,7 +138,6 @@ public class TeamSparkle extends JavaPlugin
 		/** Save Data **/
 		playerDataCache.save();
 
-//		sparkled.clear();
 		shopHandler.onDisable();
 
 		/** Cancel tasks / services **/
@@ -261,6 +260,7 @@ public class TeamSparkle extends JavaPlugin
 				// Reward the sparkler
 				data.setTokens(data.getTokens() + 1);
 				data.setTotalSparkles(data.getTotalSparkles() + 1);
+				data.getInvited().remove(sparkled.getName());
 
 				debug("Setting total sparkles for {0} to {1}", sparkler, data.getTotalSparkles());
 			}

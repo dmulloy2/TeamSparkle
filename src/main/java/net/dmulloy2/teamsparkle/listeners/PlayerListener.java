@@ -36,7 +36,7 @@ public class PlayerListener implements Listener
 			data.setTokens(0);
 		}
 
-		if (plugin.isSparkled(player))
+		if (! player.hasPlayedBefore() && plugin.isSparkled(player))
 		{
 			// Wait 6 seconds to reward
 			new BukkitRunnable()
