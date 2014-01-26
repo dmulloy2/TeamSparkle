@@ -1,10 +1,6 @@
 # TeamSparkle Configuration
 # By: dmulloy2
 
-# Automatic Update Checker
-# boolean
-updateChecker: true
-
 # Shop Items
 # List ("<cost>:<command>;<message>")
 # Example: "1:give %p diamond 1; 1 diamond"
@@ -36,3 +32,9 @@ autoSave:
 # Name of the server
 # name - string
 serverName: "The Server"
+
+# Whether or not to check for matching IP's
+checkIPs: true
+
+# Debugging
+debug: false

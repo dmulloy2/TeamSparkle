@@ -62,7 +62,7 @@ public class TeamSparkle extends JavaPlugin
 	private @Getter CommandHandler commandHandler;
 	private @Getter ShopHandler shopHandler;
 	private @Getter LogHandler logHandler;
-	
+
 	/** Data Cache **/
 	private @Getter PlayerDataCache playerDataCache;
 
@@ -180,7 +180,7 @@ public class TeamSparkle extends JavaPlugin
 		}
 		catch (MissingResourceException ex)
 		{
-			outConsole(Level.WARNING, getMessage("log_message_null"), string); // messageception :3
+			outConsole(Level.WARNING, getMessage("log_message_missing"), string);
 			return null;
 		}
 	}
@@ -295,6 +295,23 @@ public class TeamSparkle extends JavaPlugin
 	}
 
 	/**
+	 * Replaces variables for player names
+	 * 
+	 * @param string
+	 *        - Base string to format
+	 * @param player
+	 *        - {@link Player} to replace vars for
+	 */
+	public final String replacePlayerVars(String string, Player player)
+	{
+		string = string.replaceAll("%p", player.getName());
+		string = string.replaceAll("%player", player.getName());
+		string = string.replaceAll("@p", player.getName());
+		string = string.replaceAll("@player", player.getName());
+		return string;
+	}
+
+	/**
 	 * Hourly Reward Task
 	 */
 	public final class HourlyRewardTask extends BukkitRunnable
@@ -314,7 +331,7 @@ public class TeamSparkle extends JavaPlugin
 					if (entry != null)
 					{
 						String[] split = entry.split(";");
-						String command = split[0].replaceAll("%p", player.getName());
+						String command = replacePlayerVars(split[0], player);
 						getServer().dispatchCommand(getServer().getConsoleSender(), command);
 
 						player.sendMessage(FormatUtil.format(message, serverName, split[1]));
