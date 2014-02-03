@@ -234,7 +234,7 @@ public class TeamSparkle extends JavaPlugin
 			{
 				for (String command : commands)
 				{
-					command = command.replaceAll("%p", sparkled.getName());
+					command = replacePlayerVars(command, sparkled);
 					if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
 					{
 						// Oh no, something went wrong >:(

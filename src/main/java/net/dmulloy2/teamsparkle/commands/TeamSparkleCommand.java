@@ -162,9 +162,6 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		StringBuilder ret = new StringBuilder();
 		ret.append("&b/ts ");
 
-		if (plugin.getCommandHandler().usesCommandPrefix() && usesPrefix)
-			ret.append(plugin.getCommandHandler().getCommandPrefix() + " ");
-
 		ret.append(name);
 
 		for (String s : optionalArgs)
