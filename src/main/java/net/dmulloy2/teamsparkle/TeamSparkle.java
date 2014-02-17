@@ -308,6 +308,8 @@ public class TeamSparkle extends JavaPlugin
 		string = string.replaceAll("%player", player.getName());
 		string = string.replaceAll("@p", player.getName());
 		string = string.replaceAll("@player", player.getName());
+		string = string.replaceAll("&p", player.getName());
+		string = string.replaceAll("&player", player.getName());
 		return string;
 	}
 
