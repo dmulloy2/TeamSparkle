@@ -22,11 +22,14 @@ public class PlayerData implements ConfigurationSerializable
 {
 	private int tokens;
 	private int totalSparkles;
+	private String uniqueID;
 
 	private List<String> invited = new ArrayList<String>();
+	private List<String> knownBy = new ArrayList<String>();
 
 	public PlayerData()
 	{
+		//
 	}
 
 	public PlayerData(Map<String, Object> args)
@@ -47,15 +50,11 @@ public class PlayerData implements ConfigurationSerializable
 						field.setAccessible(accessible);
 					}
 				}
-			}
-			catch (Exception ex)
-			{
-			}
+			} catch (Exception e) { }
 		}
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public Map<String, Object> serialize()
 	{
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -88,7 +87,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 				else if (field.getType().isAssignableFrom(Collection.class))
 				{
-					if (! ((Collection) field.get(this)).isEmpty())
+					if (! ((Collection<?>) field.get(this)).isEmpty())
 						data.put(field.getName(), field.get(this));
 				}
 				else if (field.getType().isAssignableFrom(String.class))
@@ -98,7 +97,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 				else if (field.getType().isAssignableFrom(Map.class))
 				{
-					if (! ((Map) field.get(this)).isEmpty())
+					if (! ((Map<?, ?>) field.get(this)).isEmpty())
 						data.put(field.getName(), field.get(this));
 				}
 				else
@@ -108,11 +107,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 
 				field.setAccessible(accessible);
-
-			}
-			catch (Exception ex)
-			{
-			}
+			} catch (Exception e) { }
 		}
 
 		return data;

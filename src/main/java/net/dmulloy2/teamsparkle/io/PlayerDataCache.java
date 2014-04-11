@@ -168,14 +168,16 @@ public class PlayerDataCache
 		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
 		{
 			PlayerData data = entry.getValue();
+			File file = new File(folder, getFileName(entry.getKey()));
+
 			if (data.shouldBeSaved())
 			{
-				File file = new File(folder, getFileName(entry.getKey()));
-	
-				synchronized (file)
-				{
-					FileSerialization.save(entry.getValue(), new File(folder, getFileName(entry.getKey())));
-				}
+				FileSerialization.save(entry.getValue(), new File(folder, getFileName(entry.getKey())));
+			}
+			else
+			{
+				if (file.exists())
+					file.delete();
 			}
 		}
 

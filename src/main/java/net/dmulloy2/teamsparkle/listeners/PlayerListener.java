@@ -36,6 +36,15 @@ public class PlayerListener implements Listener
 			data.setTokens(0);
 		}
 
+		// UUID Stuff
+		if (! data.getKnownBy().contains(player.getName()))
+			data.getKnownBy().add(player.getName());
+
+		try
+		{
+			data.setUniqueID(player.getUniqueId().toString());
+		} catch (Throwable ex) { }
+
 		if (! player.hasPlayedBefore() && plugin.isSparkled(player))
 		{
 			// Wait 6 seconds to reward
