@@ -109,7 +109,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 
 	protected PlayerData getPlayerData(OfflinePlayer target)
 	{
-		return plugin.getPlayerDataCache().getData(target.getName());
+		return plugin.getPlayerDataCache().getData(target);
 	}
 
 	protected PlayerData getPlayerData(String key)

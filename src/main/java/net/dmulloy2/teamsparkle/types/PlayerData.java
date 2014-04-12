@@ -22,9 +22,9 @@ public class PlayerData implements ConfigurationSerializable
 {
 	private int tokens;
 	private int totalSparkles;
-	private String uniqueID;
-
 	private List<String> invited = new ArrayList<String>();
+
+	private String lastKnownBy;
 	private List<String> knownBy = new ArrayList<String>();
 
 	public PlayerData()
