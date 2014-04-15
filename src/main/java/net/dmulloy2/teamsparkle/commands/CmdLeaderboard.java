@@ -127,12 +127,11 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 	public class BuildLeaderboardThread extends Thread
 	{
-		private Thread thread;
-
 		public BuildLeaderboardThread()
 		{
-			this.thread = new Thread(this, "TeamSparkle-BuildLeaderboard");
-			this.thread.start();
+			super("TeamSparkle-BuildLeaderboard");
+			this.setPriority(MIN_PRIORITY);
+			this.start();
 		}
 
 		@Override
@@ -155,16 +154,13 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				}
 			}
 
-			// loadedData.clear();
-			// loadedData = null;
-
 			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(sparkleMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<String, Integer>>()
 			{
 				@Override
-				public int compare(final Entry<String, Integer> entry1, final Entry<String, Integer> entry2)
+				public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2)
 				{
-					return - entry1.getValue().compareTo(entry2.getValue());
+					return -entry1.getValue().compareTo(entry2.getValue());
 				}
 			});
 
@@ -176,10 +172,6 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			{
 				try
 				{
-					// OfflinePlayer player =
-					// Util.matchOfflinePlayer(entry.getKey());
-					// if (player != null)
-					// {
 					PlayerData data = getPlayerData(entry.getKey());
 					if (data != null)
 					{
@@ -187,17 +179,11 @@ public class CmdLeaderboard extends TeamSparkleCommand
 								data.getTotalSparkles()));
 						pos++;
 					}
-
-					data = null;
-					// }
-					//
-					// player = null;
 				}
-				catch (Exception e)
+				catch (Throwable ex)
 				{
-					// plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e,
-					// "building leaderboard entry for " + entry.getKey()));
-					// continue;
+					// Swallow the exception, move on
+					continue;
 				}
 			}
 
@@ -227,12 +213,11 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 	public class DisplayLeaderboardThread extends Thread
 	{
-		private Thread thread;
-
 		public DisplayLeaderboardThread()
 		{
-			this.thread = new Thread(this, "TeamSparkle-DisplayLeaderboard");
-			this.thread.start();
+			super("TeamSparkle-DisplayLeaderboard");
+			this.setPriority(MIN_PRIORITY);
+			this.start();
 		}
 
 		@Override
