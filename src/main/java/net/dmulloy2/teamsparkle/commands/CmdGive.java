@@ -11,17 +11,17 @@ import org.bukkit.OfflinePlayer;
  * @author dmulloy2
  */
 
-public class CmdGiveTokens extends TeamSparkleCommand
+public class CmdGive extends TeamSparkleCommand
 {
-	public CmdGiveTokens(TeamSparkle plugin)
+	public CmdGive(TeamSparkle plugin)
 	{
 		super(plugin);
-		this.name = "givetokens";
-		this.aliases.add("gt");
+		this.name = "give";
+		this.aliases.add("givetokens");
 		this.requiredArgs.add("player");
 		this.requiredArgs.add("tokens");
 		this.description = "Manually give tokens";
-		this.permission = Permission.CMD_GIVE_TOKENS;
+		this.permission = Permission.CMD_GIVE;
 
 		this.mustBePlayer = true;
 	}
@@ -44,7 +44,7 @@ public class CmdGiveTokens extends TeamSparkleCommand
 		}
 
 		int tokens = argAsInt(1, true);
-		if (tokens == - 1)
+		if (tokens == -1)
 			return;
 
 		data.setTokens(data.getTokens() + tokens);

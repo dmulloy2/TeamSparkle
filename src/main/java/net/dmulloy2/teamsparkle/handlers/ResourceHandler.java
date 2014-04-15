@@ -5,20 +5,20 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-import net.dmulloy2.teamsparkle.TeamSparkle;
+import lombok.Getter;
 import net.dmulloy2.teamsparkle.io.FileResourceLoader;
+
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author dmulloy2
  */
 
+@Getter
 public class ResourceHandler
 {
 	private ResourceBundle messages;
-
-	public TeamSparkle plugin;
-
-	public ResourceHandler(TeamSparkle plugin, ClassLoader classLoader)
+	public ResourceHandler(JavaPlugin plugin, ClassLoader classLoader)
 	{
 		try
 		{
@@ -28,10 +28,5 @@ public class ResourceHandler
 		{
 			plugin.getLogger().log(Level.SEVERE, "Could not find resource bundle: messages.properties");
 		}
-	}
-
-	public ResourceBundle getMessages()
-	{
-		return messages;
 	}
 }

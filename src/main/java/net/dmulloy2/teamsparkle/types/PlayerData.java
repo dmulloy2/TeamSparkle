@@ -27,10 +27,7 @@ public class PlayerData implements ConfigurationSerializable
 	private String lastKnownBy;
 	private List<String> knownBy = new ArrayList<String>();
 
-	public PlayerData()
-	{
-		//
-	}
+	public PlayerData() { }
 
 	public PlayerData(Map<String, Object> args)
 	{
@@ -50,10 +47,7 @@ public class PlayerData implements ConfigurationSerializable
 						field.setAccessible(accessible);
 					}
 				}
-			}
-			catch (Exception e)
-			{
-			}
+			} catch (Throwable ex) { }
 		}
 	}
 
@@ -110,10 +104,7 @@ public class PlayerData implements ConfigurationSerializable
 				}
 
 				field.setAccessible(accessible);
-			}
-			catch (Exception e)
-			{
-			}
+			} catch (Throwable ex) { }
 		}
 
 		return data;

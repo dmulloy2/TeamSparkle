@@ -1,5 +1,6 @@
 package net.dmulloy2.teamsparkle.handlers;
 
+import lombok.AllArgsConstructor;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 
@@ -10,34 +11,30 @@ import org.bukkit.entity.Player;
  * @author dmulloy2
  */
 
+@AllArgsConstructor
 public class PermissionHandler
 {
-	private TeamSparkle plugin;
+	private final TeamSparkle plugin;
 
-	public PermissionHandler(TeamSparkle plugin)
+	public final boolean hasPermission(CommandSender sender, Permission permission)
 	{
-		this.plugin = plugin;
+		return permission == null || hasPermission(sender, getPermissionString(permission));
 	}
 
-	public boolean hasPermission(CommandSender sender, Permission permission)
-	{
-		return (permission == null) ? true : hasPermission(sender, getPermissionString(permission));
-	}
-
-	public boolean hasPermission(CommandSender sender, String permission)
+	public final boolean hasPermission(CommandSender sender, String permission)
 	{
 		if (sender instanceof Player)
 		{
-			Player p = (Player) sender;
-			return (p.hasPermission(permission) || p.isOp());
+			Player player = (Player) sender;
+			return player.hasPermission(permission) || player.isOp();
 		}
 
 		return true;
 	}
 
-	private String getPermissionString(Permission permission)
+	public final String getPermissionString(Permission permission)
 	{
-		return plugin.getName().toLowerCase() + "." + permission.node.toLowerCase();
+		return plugin.getName().toLowerCase() + "." + permission.getNode().toLowerCase();
 	}
 
 }

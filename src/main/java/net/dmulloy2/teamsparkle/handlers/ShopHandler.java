@@ -21,7 +21,6 @@ public class ShopHandler
 	private HashMap<Integer, ShopItem> items;
 
 	private final TeamSparkle plugin;
-
 	public ShopHandler(TeamSparkle plugin)
 	{
 		this.plugin = plugin;

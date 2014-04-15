@@ -24,7 +24,7 @@ import java.util.logging.Level;
 
 import lombok.Getter;
 import net.dmulloy2.teamsparkle.commands.CmdBuy;
-import net.dmulloy2.teamsparkle.commands.CmdGiveTokens;
+import net.dmulloy2.teamsparkle.commands.CmdGive;
 import net.dmulloy2.teamsparkle.commands.CmdHelp;
 import net.dmulloy2.teamsparkle.commands.CmdInvite;
 import net.dmulloy2.teamsparkle.commands.CmdLeaderboard;
@@ -98,7 +98,7 @@ public class TeamSparkle extends JavaPlugin
 		/** Register Commands **/
 		commandHandler.setCommandPrefix("ts");
 		commandHandler.registerPrefixedCommand(new CmdBuy(this));
-		commandHandler.registerPrefixedCommand(new CmdGiveTokens(this));
+		commandHandler.registerPrefixedCommand(new CmdGive(this));
 		commandHandler.registerPrefixedCommand(new CmdHelp(this));
 		commandHandler.registerPrefixedCommand(new CmdInvite(this));
 		commandHandler.registerPrefixedCommand(new CmdLeaderboard(this));

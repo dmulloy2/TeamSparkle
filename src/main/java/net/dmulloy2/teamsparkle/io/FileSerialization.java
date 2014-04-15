@@ -34,7 +34,7 @@ public class FileSerialization
 		}
 		catch (Exception ex)
 		{
-			System.err.println("[SwornRPG] Exception ocurred while attempting to save file: " + file.getName());
+			System.err.println("Exception ocurred while attempting to save file: " + file.getName());
 			ex.printStackTrace();
 		}
 	}
@@ -54,10 +54,10 @@ public class FileSerialization
 		}
 		catch (Exception ex)
 		{
-			System.err.println("[SwornRPG] Exception ocurred while attempting to load file: " + file.getName());
+			System.err.println("Exception ocurred while attempting to load file: " + file.getName());
 			if (file.renameTo(new File(file.getParent(), file.getName() + "_bad")))
 			{
-				System.err.println("[SwornRPG] Renamed bad file to: " + file.getName() + "_bad");
+				System.err.println("Renamed bad file to: " + file.getName() + "_bad");
 			}
 
 			return null;

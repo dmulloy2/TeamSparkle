@@ -19,17 +19,15 @@ import org.bukkit.command.PluginCommand;
 
 public class CommandHandler implements CommandExecutor
 {
-	private final TeamSparkle plugin;
-	// Only need the name of command prefix - all other aliases listed in
-	// plugin.yml will be usable
 	private String commandPrefix;
 	private List<TeamSparkleCommand> registeredPrefixedCommands;
 	private List<TeamSparkleCommand> registeredCommands;
 
+	private final TeamSparkle plugin;
 	public CommandHandler(TeamSparkle plugin)
 	{
 		this.plugin = plugin;
-		registeredCommands = new ArrayList<TeamSparkleCommand>();
+		this.registeredCommands = new ArrayList<TeamSparkleCommand>();
 	}
 
 	public void registerCommand(TeamSparkleCommand command)
@@ -70,7 +68,7 @@ public class CommandHandler implements CommandExecutor
 	public void setCommandPrefix(String commandPrefix)
 	{
 		this.commandPrefix = commandPrefix;
-		registeredPrefixedCommands = new ArrayList<TeamSparkleCommand>();
+		this.registeredPrefixedCommands = new ArrayList<TeamSparkleCommand>();
 		plugin.getCommand(commandPrefix).setExecutor(this);
 	}
 

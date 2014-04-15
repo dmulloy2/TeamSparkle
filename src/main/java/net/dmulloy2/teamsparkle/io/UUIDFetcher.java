@@ -1,10 +1,9 @@
-package net.dmulloy2.teamsparkle.types;
+package net.dmulloy2.teamsparkle.io;
 
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,38 +18,42 @@ import org.json.simple.parser.JSONParser;
 import com.google.common.collect.ImmutableList;
 
 /**
+ * Fetches UUIDs for a list of names
+ *
  * @author evilmidget38
+ * @version 3
  */
 
 public class UUIDFetcher implements Callable<Map<String, UUID>>
 {
-	private static final int MAX_SEARCH = 100;
-	private static final String PROFILE_URL = "https://api.mojang.com/profiles/page/";
-	private static final String AGENT = "minecraft";
+	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
 	private final JSONParser jsonParser = new JSONParser();
-	private final List<String> names;
+	private final List<List<String>> namesList;
 
 	public UUIDFetcher(List<String> names)
 	{
-		this.names = ImmutableList.copyOf(names);
+		ImmutableList.Builder<List<String>> builder = ImmutableList.builder();
+		int namesCopied = 0;
+		while (namesCopied < names.size())
+		{
+			builder.add(ImmutableList.copyOf(names.subList(namesCopied, Math.min(namesCopied + 100, names.size()))));
+			namesCopied += 100;
+		}
+
+		this.namesList = builder.build();
 	}
 
+	@Override
 	public Map<String, UUID> call() throws Exception
 	{
 		Map<String, UUID> uuidMap = new HashMap<String, UUID>();
-		String body = buildBody(names);
-		for (int i = 1; i < MAX_SEARCH; i++)
+		for (List<String> names : namesList)
 		{
-			HttpURLConnection connection = createConnection(i);
+			String body = buildBody(names);
+			HttpURLConnection connection = createConnection();
 			writeBody(connection, body);
-			JSONObject jsonObject = (JSONObject) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
-			JSONArray array = (JSONArray) jsonObject.get("profiles");
-			Number count = (Number) jsonObject.get("size");
-			if (count.intValue() == 0)
-			{
-				break;
-			}
-			for (Object profile : array)
+			JSONArray jsonArr = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
+			for (Object profile : jsonArr)
 			{
 				JSONObject jsonProfile = (JSONObject) profile;
 				String id = (String) jsonProfile.get("id");
@@ -60,6 +63,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>>
 				uuidMap.put(name, uuid);
 			}
 		}
+
 		return uuidMap;
 	}
 
@@ -71,9 +75,9 @@ public class UUIDFetcher implements Callable<Map<String, UUID>>
 		writer.close();
 	}
 
-	private static HttpURLConnection createConnection(int page) throws Exception
+	private static HttpURLConnection createConnection() throws Exception
 	{
-		URL url = new URL(PROFILE_URL + page);
+		URL url = new URL(PROFILE_URL);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/json");
@@ -83,18 +87,8 @@ public class UUIDFetcher implements Callable<Map<String, UUID>>
 		return connection;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static String buildBody(List<String> names)
 	{
-		List<JSONObject> lookups = new ArrayList<JSONObject>();
-		for (String name : names)
-		{
-			JSONObject obj = new JSONObject();
-			obj.put("name", name);
-			obj.put("agent", AGENT);
-			lookups.add(obj);
-		}
-
-		return JSONValue.toJSONString(lookups);
+		return JSONValue.toJSONString(names);
 	}
 }

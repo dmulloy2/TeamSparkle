@@ -27,10 +27,9 @@ public class PlayerDataCache
 	private final File folder;
 	private final String extension = ".dat";
 	private final String folderName = "players";
-	private final TeamSparkle plugin;
-
 	private ConcurrentMap<String, PlayerData> data;
 
+	private final TeamSparkle plugin;
 	public PlayerDataCache(TeamSparkle plugin)
 	{
 		this.folder = new File(plugin.getDataFolder(), folderName);
