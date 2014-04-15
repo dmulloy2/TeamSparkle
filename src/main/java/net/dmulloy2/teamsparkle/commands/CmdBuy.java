@@ -29,7 +29,7 @@ public class CmdBuy extends TeamSparkleCommand
 		PlayerData data = getPlayerData(player);
 
 		int index = argAsInt(0, true);
-		if (index == -1)
+		if (index == - 1)
 			return;
 
 		ShopItem item = plugin.getShopHandler().getItem(index);

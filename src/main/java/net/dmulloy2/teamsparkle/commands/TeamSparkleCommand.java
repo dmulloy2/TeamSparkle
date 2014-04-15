@@ -63,7 +63,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		if (sender instanceof Player)
 			player = (Player) sender;
 
-		if (mustBePlayer && !isPlayer())
+		if (mustBePlayer && ! isPlayer())
 		{
 			err(plugin.getMessage("mustbeplayer"));
 			return;
@@ -75,7 +75,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 			return;
 		}
 
-		if (!hasPermission())
+		if (! hasPermission())
 		{
 			err(plugin.getMessage("noperm"));
 			return;
@@ -87,7 +87,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		}
 		catch (Throwable e)
 		{
-			err(plugin.getMessage("command_error"), e.getMessage());
+			err(plugin.getMessage("execution_error"), e.getClass().getName(), e.getMessage());
 			plugin.getLogHandler().debug(Util.getUsefulStack(e, "executing command " + name));
 		}
 	}
@@ -197,7 +197,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		{
 			if (msg)
 				invalidArgs();
-			return -1;
+			return - 1;
 		}
 	}
 
@@ -211,7 +211,7 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		{
 			if (msg)
 				invalidArgs();
-			return -1;
+			return - 1;
 		}
 	}
 

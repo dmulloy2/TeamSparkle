@@ -44,7 +44,7 @@ public class FileSerialization
 	{
 		try
 		{
-			if (!file.exists())
+			if (! file.exists())
 				return null;
 
 			FileConfiguration fc = YamlConfiguration.loadConfiguration(file);

@@ -139,24 +139,24 @@ public class CmdLeaderboard extends TeamSparkleCommand
 		public void run()
 		{
 			updating = true;
-			
+
 			plugin.outConsole("Updating leaderboard...");
-			
+
 			long start = System.currentTimeMillis();
-			
+
 			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
 			Map<String, Integer> sparkleMap = new HashMap<String, Integer>();
 
 			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
-				if (entry.getValue().getTotalSparkles()  > 0)
+				if (entry.getValue().getTotalSparkles() > 0)
 				{
 					sparkleMap.put(entry.getKey(), entry.getValue().getTotalSparkles());
 				}
 			}
 
-//			loadedData.clear();
-//			loadedData = null;
+			// loadedData.clear();
+			// loadedData = null;
 
 			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(sparkleMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<String, Integer>>()
@@ -164,7 +164,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				@Override
 				public int compare(final Entry<String, Integer> entry1, final Entry<String, Integer> entry2)
 				{
-					return -entry1.getValue().compareTo(entry2.getValue());
+					return - entry1.getValue().compareTo(entry2.getValue());
 				}
 			});
 
@@ -176,29 +176,31 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			{
 				try
 				{
-//					OfflinePlayer player = Util.matchOfflinePlayer(entry.getKey());
-//					if (player != null)
-//					{
-						PlayerData data = getPlayerData(entry.getKey());
-						if (data != null)
-						{
-							leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, entry.getKey(),
-									data.getTotalSparkles()));
-							pos++;
-						}
-						
-						data = null;
-//					}
-//					
-//					player = null;
+					// OfflinePlayer player =
+					// Util.matchOfflinePlayer(entry.getKey());
+					// if (player != null)
+					// {
+					PlayerData data = getPlayerData(entry.getKey());
+					if (data != null)
+					{
+						leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, entry.getKey(),
+								data.getTotalSparkles()));
+						pos++;
+					}
+
+					data = null;
+					// }
+					//
+					// player = null;
 				}
 				catch (Exception e)
 				{
-//					plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e, "building leaderboard entry for " + entry.getKey()));
-//					continue;
+					// plugin.outConsole(Level.SEVERE, Util.getUsefulStack(e,
+					// "building leaderboard entry for " + entry.getKey()));
+					// continue;
 				}
 			}
-			
+
 			sortedEntries.clear();
 			sortedEntries = null;
 

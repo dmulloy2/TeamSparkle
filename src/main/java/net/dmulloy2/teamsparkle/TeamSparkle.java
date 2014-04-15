@@ -1,19 +1,19 @@
 /**
  * TeamSparkle - a bukkit plugin
- * Copyright (C) 2013 dmulloy2
+ * Copyright (C) 2013 - 2014 dmulloy2
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.dmulloy2.teamsparkle;
 
@@ -50,6 +50,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.earth2me.essentials.Essentials;
+
 /**
  * @author dmulloy2
  */
@@ -62,6 +64,9 @@ public class TeamSparkle extends JavaPlugin
 	private @Getter CommandHandler commandHandler;
 	private @Getter ShopHandler shopHandler;
 	private @Getter LogHandler logHandler;
+
+	/** Essentials **/
+	private Essentials essentials;
 
 	/** Data Cache **/
 	private @Getter PlayerDataCache playerDataCache;
@@ -163,6 +168,30 @@ public class TeamSparkle extends JavaPlugin
 	public void debug(String string, Object... objects)
 	{
 		logHandler.debug(string, objects);
+	}
+
+	public final Essentials getEssentials()
+	{
+		try
+		{
+			if (essentials != null)
+				return essentials;
+
+			PluginManager pm = getServer().getPluginManager();
+			if (pm.isPluginEnabled("Essentials"))
+				essentials = (Essentials) pm.getPlugin("Essentials");
+			return essentials;
+		} catch (Throwable ex) { }
+		return null;
+	}
+
+	public final boolean useEssentials()
+	{
+		try
+		{
+			return getEssentials() != null;
+		} catch (Throwable ex) { }
+		return false;
 	}
 
 	/**

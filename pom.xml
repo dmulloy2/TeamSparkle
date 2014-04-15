@@ -15,6 +15,10 @@
       <id>md_5-releases</id>
       <url>http://repo.md-5.net/content/repositories/snapshots/</url>
     </repository>
+    <repository>
+      <id>essentials-repo</id>
+      <url>http://repo.ess3.net/content/repositories/public/</url>
+    </repository>
   </repositories>
 
   <profiles>
@@ -80,6 +84,11 @@
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.7.8-R0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>net.ess3</groupId>
+      <artifactId>Essentials</artifactId>
+      <version>2.13-SNAPSHOT</version>
     </dependency>
     <dependency>
  	  <groupId>org.projectlombok</groupId>

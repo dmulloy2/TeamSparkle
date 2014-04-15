@@ -25,7 +25,8 @@ public class CmdInvite extends TeamSparkleCommand
 	@Override
 	public void perform()
 	{
-		if (Util.hasPlayedBefore(args[0]))
+		String name = args[0];
+		if (hasPlayedBefore(name))
 		{
 			err(getMessage("has_played_before"));
 			return;
@@ -33,7 +34,7 @@ public class CmdInvite extends TeamSparkleCommand
 
 		PlayerData data = getPlayerData(player);
 
-		if (data.getInvited().contains(args[0]))
+		if (data.getInvited().contains(name))
 		{
 			err(getMessage("already_invited"));
 			return;
@@ -41,6 +42,21 @@ public class CmdInvite extends TeamSparkleCommand
 
 		data.getInvited().add(args[0]);
 
-		sendpMessage(getMessage("invite_confirmed"), args[0]);
+		sendpMessage(getMessage("invite_confirmed"), name);
+	}
+
+	@SuppressWarnings("deprecation")
+	private boolean hasPlayedBefore(String name)
+	{
+		if (plugin.useEssentials())
+		{
+			return plugin.getEssentials().getUser(name) != null;
+		}
+
+		try
+		{
+			return Util.hasPlayedBefore(name);
+		} catch (Throwable ex) { }
+		return false;
 	}
 }

@@ -50,7 +50,10 @@ public class PlayerData implements ConfigurationSerializable
 						field.setAccessible(accessible);
 					}
 				}
-			} catch (Exception e) { }
+			}
+			catch (Exception e)
+			{
+			}
 		}
 	}
 
@@ -107,7 +110,10 @@ public class PlayerData implements ConfigurationSerializable
 				}
 
 				field.setAccessible(accessible);
-			} catch (Exception e) { }
+			}
+			catch (Exception e)
+			{
+			}
 		}
 
 		return data;

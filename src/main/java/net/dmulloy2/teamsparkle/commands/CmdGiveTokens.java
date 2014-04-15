@@ -44,7 +44,7 @@ public class CmdGiveTokens extends TeamSparkleCommand
 		}
 
 		int tokens = argAsInt(1, true);
-		if (tokens == -1)
+		if (tokens == - 1)
 			return;
 
 		data.setTokens(data.getTokens() + tokens);
