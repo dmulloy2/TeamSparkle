@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
+import net.dmulloy2.teamsparkle.util.FormatUtil;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -27,56 +28,150 @@ public class PlayerDataCache
 	private final File folder;
 	private final String extension = ".dat";
 	private final String folderName = "players";
-	private ConcurrentMap<String, PlayerData> data;
-
 	private final TeamSparkle plugin;
+
+	private final ConcurrentMap<String, PlayerData> cache;
+
 	public PlayerDataCache(TeamSparkle plugin)
 	{
 		this.folder = new File(plugin.getDataFolder(), folderName);
-
 		if (! folder.exists())
-			folder.mkdir();
+			folder.mkdirs();
 
-		this.data = new ConcurrentHashMap<String, PlayerData>(64, 0.75f, 64);
+		this.cache = new ConcurrentHashMap<String, PlayerData>(64, 0.75F, 64);
 		this.plugin = plugin;
 	}
 
-	public PlayerData getData(final String key)
+	// ---- Data Getters
+
+	public final PlayerData getData(String key)
 	{
-		PlayerData value = data.get(key);
-		if (value == null)
+		// Check cache first
+		PlayerData data = cache.get(key);
+		if (data == null)
 		{
+			// Attempt to load it
 			File file = new File(folder, getFileName(key));
 			if (file.exists())
 			{
-				value = loadData(key);
-				if (value == null)
+				data = loadData(key);
+				if (data == null)
 				{
+					// Corrupt data :(
 					file.delete();
 					return null;
 				}
 
-				addData(key, value);
+				// Cache it
+				cache.put(key, data);
 			}
 		}
 
-		return value;
+		return data;
 	}
 
-	public PlayerData getData(final OfflinePlayer player)
+	public final PlayerData getData(Player player)
 	{
-		return getData(player.getName());
+		PlayerData data = getData(getKey(player));
+
+		// Online players always have data
+		if (data == null)
+			data = newData(player);
+
+		// Update variables
+		data.setLastKnownBy(player.getName());
+		data.setUniqueId(player.getUniqueId().toString());
+
+		// Return
+		return data;
 	}
 
-	public Map<String, PlayerData> getAllLoadedPlayerData()
+	public final PlayerData getData(OfflinePlayer player)
 	{
-		return Collections.unmodifiableMap(data);
+		// Slightly different handling for Players
+		if (player.isOnline())
+			return getData(player.getPlayer());
+
+		// Attempt to get by name
+		return getData(getKey(player));
 	}
 
-	public Map<String, PlayerData> getAllPlayerData()
+	// ---- Data Management
+
+	public final PlayerData newData(String key)
+	{
+		// Construct
+		PlayerData data = new PlayerData();
+
+		// Cache and return
+		cache.put(key, data);
+		return data;
+	}
+
+	public final PlayerData newData(Player player)
+	{
+		return newData(getKey(player));
+	}
+
+	private final PlayerData loadData(String key)
+	{
+		File file = new File(folder, getFileName(key));
+
+		try
+		{
+			PlayerData data = FileSerialization.load(file, PlayerData.class);
+			data.setLastKnownBy(key);
+			return data;
+		}
+		catch (Throwable ex)
+		{
+			plugin.outConsole(Level.WARNING, "Failed to load player data for {0}!", key);
+			return null;
+		}
+	}
+
+	public final void save()
+	{
+		long start = System.currentTimeMillis();
+		plugin.outConsole("Saving {0} to disk...", folderName);
+
+		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
+		{
+			File file = new File(folder, getFileName(entry.getKey()));
+			FileSerialization.save(entry.getValue(), file);
+		}
+
+		plugin.outConsole("Players saved! [{0} ms]", System.currentTimeMillis() - start);
+	}
+
+	public final void cleanupData()
+	{
+		// Get all online players into an array list
+		List<String> online = new ArrayList<String>();
+		for (Player player : plugin.getServer().getOnlinePlayers())
+			online.add(player.getName());
+
+		// Actually cleanup the data
+		for (String key : getAllLoadedPlayerData().keySet())
+			if (! online.contains(key))
+				cache.remove(key);
+
+		// Clear references
+		online.clear();
+		online = null;
+	}
+
+	// ---- Mass Getters
+
+	public final Map<String, PlayerData> getAllLoadedPlayerData()
+	{
+		return Collections.unmodifiableMap(cache);
+	}
+
+	public final Map<String, PlayerData> getAllPlayerData()
 	{
 		Map<String, PlayerData> data = new HashMap<String, PlayerData>();
-		data.putAll(this.data);
+		data.putAll(cache);
 
 		File[] files = folder.listFiles(new FileFilter()
 		{
@@ -89,132 +184,28 @@ public class PlayerDataCache
 
 		for (File file : files)
 		{
-			String fileName = trimFileExtension(file);
-			if (! isFileAlreadyLoaded(fileName, data))
+			String fileName = FormatUtil.trimFileExtension(file, extension);
+			if (! isFileLoaded(fileName))
 				data.put(fileName, loadData(fileName));
 		}
 
 		return Collections.unmodifiableMap(data);
 	}
 
-	private void removeData(final String key)
+	// ---- Util
+
+	private final String getKey(OfflinePlayer player)
 	{
-		data.remove(key);
+		return player.getName();
 	}
 
-	private void addData(final String key, final PlayerData value)
-	{
-		data.put(key, value);
-	}
-
-	public PlayerData newData(final String key)
-	{
-		PlayerData value = new PlayerData();
-		addData(key, value);
-		return value;
-	}
-
-	public PlayerData newData(final OfflinePlayer player)
-	{
-		return newData(player.getName());
-	}
-
-	public void cleanupData()
-	{
-		// Get all online players into an array list
-		List<String> online = new ArrayList<String>();
-		for (Player player : plugin.getServer().getOnlinePlayers())
-			online.add(player.getName());
-
-		// Actually cleanup the data
-		for (String key : getAllLoadedPlayerData().keySet())
-			if (! online.contains(key))
-				removeData(key);
-
-		// Clear references
-		online.clear();
-		online = null;
-	}
-
-	private PlayerData loadData(final String key)
-	{
-		File file = new File(folder, getFileName(key));
-
-		try
-		{
-			synchronized (file)
-			{
-				return FileSerialization.load(new File(folder, getFileName(key)), PlayerData.class);
-			}
-		}
-		catch (Exception e)
-		{
-			plugin.outConsole(Level.WARNING, "Could not load PlayerData for \"{0}\": {1}", key, e.getMessage());
-			return null;
-		}
-	}
-
-	// Alias for save
-	public void save()
-	{
-		save(true);
-	}
-
-	public void save(boolean cleanup)
-	{
-		plugin.outConsole("Saving {0} to disk...", folderName);
-		long start = System.currentTimeMillis();
-		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
-		{
-			PlayerData data = entry.getValue();
-			File file = new File(folder, getFileName(entry.getKey()));
-
-			if (data.shouldBeSaved())
-			{
-				FileSerialization.save(entry.getValue(), new File(folder, getFileName(entry.getKey())));
-			}
-			else
-			{
-				if (file.exists())
-					file.delete();
-			}
-		}
-
-		if (cleanup)
-			cleanupData();
-
-		plugin.outConsole("Players saved! [{0} ms]", System.currentTimeMillis() - start);
-	}
-
-	private boolean isFileAlreadyLoaded(final String fileName, final Map<String, PlayerData> map)
-	{
-		for (String key : map.keySet())
-		{
-			if (key.equals(fileName))
-				return true;
-		}
-
-		return false;
-	}
-
-	private String trimFileExtension(final File file)
-	{
-		int index = file.getName().lastIndexOf(extension);
-		return index > 0 ? file.getName().substring(0, index) : file.getName();
-	}
-
-	private String getFileName(final String key)
+	private final String getFileName(String key)
 	{
 		return key + extension;
 	}
 
-	public int getFileListSize()
+	private final boolean isFileLoaded(String fileName)
 	{
-		return folder.listFiles().length;
-	}
-
-	public int getCacheSize()
-	{
-		return data.size();
+		return cache.keySet().contains(fileName);
 	}
 }

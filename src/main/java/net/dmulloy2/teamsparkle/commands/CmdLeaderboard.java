@@ -137,48 +137,49 @@ public class CmdLeaderboard extends TeamSparkleCommand
 		@Override
 		public void run()
 		{
-			updating = true;
-
 			plugin.outConsole("Updating leaderboard...");
 
 			long start = System.currentTimeMillis();
 
 			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
-			Map<String, Integer> sparkleMap = new HashMap<String, Integer>();
+			Map<PlayerData, Integer> experienceMap = new HashMap<PlayerData, Integer>();
 
 			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
-				if (entry.getValue().getTotalSparkles() > 0)
+				PlayerData value = entry.getValue();
+				if (value.getTotalSparkles() > 0)
 				{
-					sparkleMap.put(entry.getKey(), entry.getValue().getTotalSparkles());
+					experienceMap.put(value, value.getTotalSparkles());
 				}
 			}
 
-			List<Entry<String, Integer>> sortedEntries = new ArrayList<Entry<String, Integer>>(sparkleMap.entrySet());
-			Collections.sort(sortedEntries, new Comparator<Entry<String, Integer>>()
+			if (experienceMap.isEmpty())
+			{
+				err("No players with XP found");
+				return;
+			}
+
+			List<Entry<PlayerData, Integer>> sortedEntries = new ArrayList<Entry<PlayerData, Integer>>(experienceMap.entrySet());
+			Collections.sort(sortedEntries, new Comparator<Entry<PlayerData, Integer>>()
 			{
 				@Override
-				public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2)
+				public int compare(Entry<PlayerData, Integer> entry1, Entry<PlayerData, Integer> entry2)
 				{
-					return -entry1.getValue().compareTo(entry2.getValue());
+					return - entry1.getValue().compareTo(entry2.getValue());
 				}
 			});
 
-			sparkleMap.clear();
-			sparkleMap = null;
+			// Clear the map
+			experienceMap.clear();
 
 			int pos = 1;
-			for (Entry<String, Integer> entry : sortedEntries)
+			for (Entry<PlayerData, Integer> entry : sortedEntries)
 			{
 				try
 				{
-					PlayerData data = getPlayerData(entry.getKey());
-					if (data != null)
-					{
-						leaderboard.add(FormatUtil.format(plugin.getMessage("leaderboard_format"), pos, entry.getKey(),
-								data.getTotalSparkles()));
-						pos++;
-					}
+					PlayerData data = entry.getKey();
+					leaderboard.add(FormatUtil.format(getMessage("leaderboard_format"), pos, data.getLastKnownBy(), data.getTotalSparkles()));
+					pos++;
 				}
 				catch (Throwable ex)
 				{
@@ -188,7 +189,6 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			}
 
 			sortedEntries.clear();
-			sortedEntries = null;
 
 			lastUpdateTime = System.currentTimeMillis();
 
@@ -196,10 +196,10 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
 
-			// Save data, but don't cleanup
-			plugin.getPlayerDataCache().save(false);
+			// Save the data
+			plugin.getPlayerDataCache().save();
 
-			// Cleanup data sync
+			// Clean up the data sync
 			new BukkitRunnable()
 			{
 				@Override
