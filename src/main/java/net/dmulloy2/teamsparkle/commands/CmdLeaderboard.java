@@ -11,7 +11,9 @@ import java.util.Map.Entry;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
+import net.dmulloy2.teamsparkle.util.Util;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -37,25 +39,36 @@ public class CmdLeaderboard extends TeamSparkleCommand
 	@Override
 	public void perform()
 	{
+		if (updating)
+		{
+			err("Leaderboard is already updating!");
+			return;
+		}
+
 		if (leaderboard == null)
 		{
 			this.leaderboard = new ArrayList<String>();
 		}
 
-		if ((System.currentTimeMillis() - lastUpdateTime) > 18000L)
+		if ((System.currentTimeMillis() - lastUpdateTime) > 600000L || leaderboard.isEmpty())
 		{
 			sendpMessage(getMessage("leaderboard_wait"));
-
+			
 			leaderboard.clear();
+			updating = true;
 
 			new BuildLeaderboardThread();
 		}
 
-		new DisplayLeaderboardThread();
+		new DisplayLeaderboardThread(player.getName());
 	}
 
-	public void displayLeaderboard()
+	public void displayLeaderboard(String playerName)
 	{
+		Player player = Util.matchPlayer(playerName);
+		if (player == null)
+			return;
+
 		int index = 1;
 
 		if (args.length > 0)
@@ -69,12 +82,12 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 		if (index > pageCount)
 		{
-			err(getMessage("error-no-page-with-index"), args[0]);
+			player.sendMessage(FormatUtil.format("&cError: &4" + getMessage("error_no_page_with_index"), args[0]));
 			return;
 		}
 
 		for (String s : getPage(index))
-			sendMessage(s);
+			player.sendMessage(FormatUtil.format(s));
 	}
 
 	private int linesPerPage = 10;
@@ -142,35 +155,35 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			long start = System.currentTimeMillis();
 
 			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
-			Map<PlayerData, Integer> experienceMap = new HashMap<PlayerData, Integer>();
+			Map<PlayerData, Integer> sparkleMap = new HashMap<PlayerData, Integer>();
 
 			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
 				PlayerData value = entry.getValue();
 				if (value.getTotalSparkles() > 0)
 				{
-					experienceMap.put(value, value.getTotalSparkles());
+					sparkleMap.put(value, value.getTotalSparkles());
 				}
 			}
 
-			if (experienceMap.isEmpty())
+			if (sparkleMap.isEmpty())
 			{
-				err("No players with XP found");
+				err("No players with sparkles found");
 				return;
 			}
 
-			List<Entry<PlayerData, Integer>> sortedEntries = new ArrayList<Entry<PlayerData, Integer>>(experienceMap.entrySet());
+			List<Entry<PlayerData, Integer>> sortedEntries = new ArrayList<Entry<PlayerData, Integer>>(sparkleMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<PlayerData, Integer>>()
 			{
 				@Override
 				public int compare(Entry<PlayerData, Integer> entry1, Entry<PlayerData, Integer> entry2)
 				{
-					return - entry1.getValue().compareTo(entry2.getValue());
+					return -entry1.getValue().compareTo(entry2.getValue());
 				}
 			});
 
 			// Clear the map
-			experienceMap.clear();
+			sparkleMap.clear();
 
 			int pos = 1;
 			for (Entry<PlayerData, Integer> entry : sortedEntries)
@@ -178,7 +191,8 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				try
 				{
 					PlayerData data = entry.getKey();
-					leaderboard.add(FormatUtil.format(getMessage("leaderboard_format"), pos, data.getLastKnownBy(), data.getTotalSparkles()));
+					leaderboard.add(FormatUtil.format(getMessage("leaderboard_format"), pos, data.getLastKnownBy(), 
+							data.getTotalSparkles()));
 					pos++;
 				}
 				catch (Throwable ex)
@@ -199,7 +213,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			// Save the data
 			plugin.getPlayerDataCache().save();
 
-			// Clean up the data sync
+			// Clean up the data
 			new BukkitRunnable()
 			{
 				@Override
@@ -213,10 +227,12 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 	public class DisplayLeaderboardThread extends Thread
 	{
-		public DisplayLeaderboardThread()
+		private final String playerName;
+		public DisplayLeaderboardThread(String playerName)
 		{
 			super("TeamSparkle-DisplayLeaderboard");
 			this.setPriority(MIN_PRIORITY);
+			this.playerName = playerName;
 			this.start();
 		}
 
@@ -230,7 +246,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 					sleep(500L);
 				}
 
-				displayLeaderboard();
+				displayLeaderboard(playerName);
 			}
 			catch (Exception e)
 			{
