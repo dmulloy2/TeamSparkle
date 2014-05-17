@@ -214,97 +214,80 @@ public class TeamSparkle extends JavaPlugin
 		}
 	}
 
-	public final boolean isSparkled(String name)
-	{
-		return getSparkler(name) != null;
-	}
-
+	/**
+	 * Whether or not a given player was sparkled
+	 * 
+	 * @param player
+	 *        - Player to check
+	 */
 	public final boolean isSparkled(Player player)
 	{
 		return getSparkler(player) != null;
 	}
 
-	public final String getSparkler(String name)
+	private final String getSparkler(Player player)
 	{
-		for (Entry<String, PlayerData> entry : playerDataCache.getAllLoadedPlayerData().entrySet())
+		// This won't be performance intensive, since only players with data get saved
+		for (Entry<String, PlayerData> entry : playerDataCache.getAllPlayerData().entrySet())
 		{
-			List<String> invited = entry.getValue().getInvited();
-			if (! invited.isEmpty())
-			{
-				if (invited.contains(name))
-					return entry.getKey();
-			}
+			PlayerData data = entry.getValue();
+			if (data.getInvited().contains(player.getName().toLowerCase()))
+				return entry.getKey();
 		}
 
 		return null;
 	}
 
-	public final String getSparkler(Player player)
-	{
-		return getSparkler(player.getName());
-	}
-
 	/**
-	 * Processes a sparkled player
+	 * Handles the sparkle of a given player
 	 * 
-	 * @param sparkled
-	 *        - Sparkled {@link Player}
+	 * @param player
+	 *        - Player who was sparkled
 	 */
-	public final void handleSparkle(Player sparkled)
+	public final void handleSparkle(Player player)
 	{
-		String sparkler = getSparkler(sparkled);
-		if (sparkler != null)
-		{
-			outConsole("Handling sparkle of: {0}. Sparkler: {1}", sparkled.getName(), sparkler);
+		String name = getSparkler(player);
+		if (name == null) return;
 
-			// Commands for newly joined sparkleds
-			List<String> commands = getConfig().getStringList("sparkledRewards");
-			if (! commands.isEmpty())
+		OfflinePlayer sparkler = Util.matchOfflinePlayer(name);
+		if (sparkler == null) return;
+
+		logHandler.log("Handling {0}''s sparkle of {1}", sparkler.getName(), player.getName());
+
+		// Commands for newly sparkled players
+		List<String> commands = getConfig().getStringList("sparkledRewards");
+		if (! commands.isEmpty())
+		{
+			for (String command : commands)
 			{
-				for (String command : commands)
+				command = replacePlayerVars(command, player);
+				if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
 				{
-					command = replacePlayerVars(command, sparkled);
-					if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
-					{
-						// Oh no, something went wrong >:(
-						outConsole(Level.WARNING, "Could not execute command \"{0}\"", command);
-					}
-					else
-					{
-						debug("Executed command \"{0}\"", command);
-					}
+					// Oh no, something went wrong >:(
+					outConsole(Level.WARNING, "Could not execute command \"{0}\"", command);
+				}
+				else
+				{
+					debug("Executed command \"{0}\"", command);
 				}
 			}
-			else
-			{
-				debug("\"sparkledRewards\" list is empty! Not rewarding {0}", sparkled.getName());
-			}
-
-			// Welcome them
-			sparkled.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), sparkled.getName()));
-
-			PlayerData data = playerDataCache.getData(sparkler);
-			if (data != null)
-			{
-				// Reward the sparkler
-				data.setTokens(data.getTokens() + 1);
-				data.setTotalSparkles(data.getTotalSparkles() + 1);
-				data.getInvited().remove(sparkled.getName());
-
-				debug("Setting total sparkles for {0} to {1}", sparkler, data.getTotalSparkles());
-			}
-
-			// Thank them, if online
-			OfflinePlayer sparklerp = Util.matchOfflinePlayer(sparkler);
-			if (sparklerp != null && sparklerp.isOnline())
-			{
-				((Player) sparklerp).sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), sparkled.getName()));
-			}
 		}
-		else
+
+		// Welcome them
+		player.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), player.getName()));
+
+		// Reward the sparkler
+		PlayerData data = playerDataCache.getData(sparkler);
+		if (data == null) return;
+
+		data.getInvited().remove(player.getName());
+		data.setTotalSparkles(data.getTotalSparkles() + 1);
+		data.setTokens(data.getTokens() + 1);
+
+		// Thank the sparkler
+		if (sparkler.isOnline())
 		{
-			// Should never happen...
-			debug("Could not get sparkler for {0}", sparkled.getName());
+			sparkler.getPlayer().sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), player.getName()));
 		}
 	}
 

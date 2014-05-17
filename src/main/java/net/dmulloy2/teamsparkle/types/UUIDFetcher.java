@@ -1,4 +1,4 @@
-package net.dmulloy2.teamsparkle.io;
+package net.dmulloy2.teamsparkle.types;
 
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;

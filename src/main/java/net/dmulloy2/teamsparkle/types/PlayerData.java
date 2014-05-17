@@ -25,12 +25,8 @@ public class PlayerData implements ConfigurationSerializable
 	private List<String> invited = new ArrayList<String>();
 
 	private String lastKnownBy;
-	private String uniqueId;
 
-	public PlayerData()
-	{
-		//
-	}
+	public PlayerData() { }
 
 	public PlayerData(Map<String, Object> args)
 	{

@@ -8,16 +8,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
+import net.dmulloy2.teamsparkle.types.UUIDFetcher;
 import net.dmulloy2.teamsparkle.util.FormatUtil;
+import net.dmulloy2.teamsparkle.util.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.Files;
 
 /**
  * @author dmulloy2
@@ -28,10 +37,10 @@ public class PlayerDataCache
 	private final File folder;
 	private final String extension = ".dat";
 	private final String folderName = "players";
-	private final TeamSparkle plugin;
 
 	private final ConcurrentMap<String, PlayerData> cache;
 
+	private final TeamSparkle plugin;
 	public PlayerDataCache(TeamSparkle plugin)
 	{
 		this.folder = new File(plugin.getDataFolder(), folderName);
@@ -40,11 +49,12 @@ public class PlayerDataCache
 
 		this.cache = new ConcurrentHashMap<String, PlayerData>(64, 0.75F, 64);
 		this.plugin = plugin;
+		this.convertToUUID();
 	}
 
 	// ---- Data Getters
 
-	public final PlayerData getData(String key)
+	private final PlayerData getData(String key)
 	{
 		// Check cache first
 		PlayerData data = cache.get(key);
@@ -78,9 +88,8 @@ public class PlayerDataCache
 		if (data == null)
 			data = newData(player);
 
-		// Update variables
+		// Update last known by
 		data.setLastKnownBy(player.getName());
-		data.setUniqueId(player.getUniqueId().toString());
 
 		// Return
 		return data;
@@ -120,7 +129,6 @@ public class PlayerDataCache
 		try
 		{
 			PlayerData data = FileSerialization.load(file, PlayerData.class);
-			data.setLastKnownBy(key);
 			return data;
 		}
 		catch (Throwable ex)
@@ -137,8 +145,15 @@ public class PlayerDataCache
 
 		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
 		{
+			PlayerData data = entry.getValue();
 			File file = new File(folder, getFileName(entry.getKey()));
-			FileSerialization.save(entry.getValue(), file);
+
+			// Dynamic saving
+			if (data.shouldBeSaved())
+				FileSerialization.save(entry.getValue(), file);
+			else
+				if (file.exists())
+					file.delete();
 		}
 
 		plugin.outConsole("Players saved! [{0} ms]", System.currentTimeMillis() - start);
@@ -192,11 +207,113 @@ public class PlayerDataCache
 		return Collections.unmodifiableMap(data);
 	}
 
+	// ---- UUID Conversion
+
+	private final void convertToUUID()
+	{
+		long start = System.currentTimeMillis();
+		plugin.getLogHandler().log("Checking for unconverted files");
+
+		Map<String, PlayerData> data = getUnconvertedData();
+		if (data.isEmpty())
+			return;
+
+		plugin.getLogHandler().log("Converting {0} files!", data.size());
+
+		try
+		{
+			List<String> names = new ArrayList<String>(data.keySet());
+			ImmutableList.Builder<List<String>> builder = ImmutableList.builder();
+			int namesCopied = 0;
+			while (namesCopied < names.size())
+			{
+				builder.add(ImmutableList.copyOf(names.subList(namesCopied, Math.min(namesCopied + 100, names.size()))));
+				namesCopied += 100;
+			}
+
+			List<UUIDFetcher> fetchers = new ArrayList<UUIDFetcher>();
+			for (List<String> namesList : builder.build())
+			{
+				fetchers.add(new UUIDFetcher(namesList));
+			}
+
+			ExecutorService e = Executors.newFixedThreadPool(3);
+			List<Future<Map<String, UUID>>> results = e.invokeAll(fetchers);
+
+			File archive = new File(folder.getParentFile(), "archive");
+			if (! archive.exists())
+				archive.mkdir();
+
+			for (Future<Map<String, UUID>> result : results)
+			{
+				Map<String, UUID> uuids = result.get();
+				for (Entry<String, UUID> entry : uuids.entrySet())
+				{
+					try
+					{
+						// Get and update
+						String name = entry.getKey();
+						String uniqueId = entry.getValue().toString();
+						PlayerData dat = data.get(name);
+						dat.setLastKnownBy(name);
+
+						// Archive the old file
+						File file = new File(folder, getFileName(name));
+						Files.move(file, new File(archive, file.getName()));
+
+						// Dynamically create and save
+						if (dat.shouldBeSaved())
+						{
+							File newFile = new File(folder, getFileName(uniqueId));
+							FileSerialization.save(dat, newFile);
+						}
+					}
+					catch (Throwable ex)
+					{
+						plugin.getLogHandler().log(Level.WARNING, "Failed to convert " + entry.getKey());
+					}
+				}
+			}
+		}
+		catch (Throwable ex)
+		{
+			plugin.getLogHandler().log(Level.WARNING, Util.getUsefulStack(ex, "converting to UUID-based lookups!"));
+			return;
+		}
+
+		plugin.getLogHandler().log("Successfully converted to UUID-based lookups! Took {0} ms!", System.currentTimeMillis() - start);
+	}
+
+	private final Map<String, PlayerData> getUnconvertedData()
+	{
+		Map<String, PlayerData> data = new HashMap<String, PlayerData>();
+
+		File[] files = folder.listFiles(new FileFilter()
+		{
+			@Override
+			public boolean accept(File file)
+			{
+				String name = file.getName();
+				return name.contains(extension) && name.length() != 40;
+			}
+		});
+
+		for (File file : files)
+		{
+			String fileName = FormatUtil.trimFileExtension(file, extension);
+			PlayerData loaded = loadData(fileName);
+			loaded.setLastKnownBy(fileName);
+			data.put(fileName, loaded);
+		}
+
+		return Collections.unmodifiableMap(data);
+	}
+
 	// ---- Util
 
 	private final String getKey(OfflinePlayer player)
 	{
-		return player.getName();
+		return player.getUniqueId().toString();
 	}
 
 	private final String getFileName(String key)

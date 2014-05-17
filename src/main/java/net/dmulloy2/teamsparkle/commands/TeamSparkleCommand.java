@@ -112,11 +112,6 @@ public abstract class TeamSparkleCommand implements CommandExecutor
 		return plugin.getPlayerDataCache().getData(target);
 	}
 
-	protected PlayerData getPlayerData(String key)
-	{
-		return plugin.getPlayerDataCache().getData(key);
-	}
-
 	protected final void sendMessage(String msg, Object... args)
 	{
 		sender.sendMessage(FormatUtil.format(msg, args));
