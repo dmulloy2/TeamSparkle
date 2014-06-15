@@ -10,8 +10,8 @@ import java.util.Map.Entry;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.teamsparkle.util.FormatUtil;
-import net.dmulloy2.teamsparkle.util.Util;
+import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

@@ -6,7 +6,7 @@ import java.util.List;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.ShopItem;
-import net.dmulloy2.teamsparkle.util.FormatUtil;
+import net.dmulloy2.util.FormatUtil;
 
 /**
  * @author dmulloy2

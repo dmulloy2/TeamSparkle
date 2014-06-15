@@ -2,7 +2,7 @@ package net.dmulloy2.teamsparkle.listeners;
 
 import lombok.AllArgsConstructor;
 import net.dmulloy2.teamsparkle.TeamSparkle;
-import net.dmulloy2.teamsparkle.util.TimeUtil;
+import net.dmulloy2.util.TimeUtil;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -3,7 +3,9 @@ package net.dmulloy2.teamsparkle.commands;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.teamsparkle.util.Util;
+import net.dmulloy2.util.Util;
+
+import org.bukkit.OfflinePlayer;
 
 /**
  * @author dmulloy2
@@ -45,18 +47,9 @@ public class CmdInvite extends TeamSparkleCommand
 		sendpMessage(getMessage("invite_confirmed"), name);
 	}
 
-	@SuppressWarnings("deprecation")
-	private boolean hasPlayedBefore(String name)
+	private final boolean hasPlayedBefore(String name)
 	{
-		if (plugin.useEssentials())
-		{
-			return plugin.getEssentials().getUser(name) != null;
-		}
-
-		try
-		{
-			return Util.hasPlayedBefore(name);
-		} catch (Throwable ex) { }
-		return false;
+		OfflinePlayer player = Util.matchOfflinePlayer(name);
+		return player == null || ! player.hasPlayedBefore();
 	}
 }

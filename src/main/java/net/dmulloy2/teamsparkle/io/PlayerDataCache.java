@@ -16,11 +16,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import net.dmulloy2.io.FileSerialization;
+import net.dmulloy2.io.UUIDFetcher;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.teamsparkle.types.UUIDFetcher;
-import net.dmulloy2.teamsparkle.util.FormatUtil;
-import net.dmulloy2.teamsparkle.util.Util;
+import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

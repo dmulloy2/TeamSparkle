@@ -23,50 +23,43 @@ import java.util.MissingResourceException;
 import java.util.logging.Level;
 
 import lombok.Getter;
+import net.dmulloy2.SwornPlugin;
+import net.dmulloy2.commands.CmdHelp;
+import net.dmulloy2.handlers.CommandHandler;
+import net.dmulloy2.handlers.LogHandler;
+import net.dmulloy2.handlers.PermissionHandler;
+import net.dmulloy2.handlers.ResourceHandler;
 import net.dmulloy2.teamsparkle.commands.CmdBuy;
 import net.dmulloy2.teamsparkle.commands.CmdGive;
-import net.dmulloy2.teamsparkle.commands.CmdHelp;
 import net.dmulloy2.teamsparkle.commands.CmdInvite;
 import net.dmulloy2.teamsparkle.commands.CmdLeaderboard;
 import net.dmulloy2.teamsparkle.commands.CmdReload;
 import net.dmulloy2.teamsparkle.commands.CmdShop;
 import net.dmulloy2.teamsparkle.commands.CmdStats;
-import net.dmulloy2.teamsparkle.handlers.CommandHandler;
-import net.dmulloy2.teamsparkle.handlers.LogHandler;
-import net.dmulloy2.teamsparkle.handlers.PermissionHandler;
-import net.dmulloy2.teamsparkle.handlers.ResourceHandler;
 import net.dmulloy2.teamsparkle.handlers.ShopHandler;
 import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.teamsparkle.util.FormatUtil;
-import net.dmulloy2.teamsparkle.util.TimeUtil;
-import net.dmulloy2.teamsparkle.util.Util;
+import net.dmulloy2.types.Reloadable;
+import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.TimeUtil;
+import net.dmulloy2.util.Util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import com.earth2me.essentials.Essentials;
 
 /**
  * @author dmulloy2
  */
 
-public class TeamSparkle extends JavaPlugin
+public class TeamSparkle extends SwornPlugin implements Reloadable
 {
 	/** Handlers **/
-	private @Getter PermissionHandler permissionHandler;
 	private @Getter ResourceHandler resourceHandler;
-	private @Getter CommandHandler commandHandler;
 	private @Getter ShopHandler shopHandler;
-	private @Getter LogHandler logHandler;
-
-	/** Essentials **/
-	private Essentials essentials;
 
 	/** Data Cache **/
 	private @Getter PlayerDataCache playerDataCache;
@@ -170,28 +163,11 @@ public class TeamSparkle extends JavaPlugin
 		logHandler.debug(string, objects);
 	}
 
-	public final Essentials getEssentials()
+	@Override
+	public void reload()
 	{
-		try
-		{
-			if (essentials != null)
-				return essentials;
-
-			PluginManager pm = getServer().getPluginManager();
-			if (pm.isPluginEnabled("Essentials"))
-				essentials = (Essentials) pm.getPlugin("Essentials");
-			return essentials;
-		} catch (Throwable ex) { }
-		return null;
-	}
-
-	public final boolean useEssentials()
-	{
-		try
-		{
-			return getEssentials() != null;
-		} catch (Throwable ex) { }
-		return false;
+		reloadConfig();
+		shopHandler.reload();
 	}
 
 	/**
