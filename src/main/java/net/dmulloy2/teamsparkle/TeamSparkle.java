@@ -41,6 +41,7 @@ import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.types.Reloadable;
+import net.dmulloy2.types.StringJoiner;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.TimeUtil;
 import net.dmulloy2.util.Util;
@@ -65,7 +66,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	private @Getter PlayerDataCache playerDataCache;
 
 	/** Global Prefix **/
-	private @Getter String prefix = FormatUtil.format("&6[&4&lTS&6] ");
+	private @Getter String prefix = FormatUtil.format("&3[&eTeamSparkle&3]&e ");
 
 	@Override
 	public void onEnable()
@@ -299,6 +300,17 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		string = string.replaceAll("&p", player.getName());
 		string = string.replaceAll("&player", player.getName());
 		return string;
+	}
+
+	@Override
+	public List<String> getExtraHelp()
+	{
+		StringJoiner help = new StringJoiner(" ");
+		help.append(getMessage("extra_help_1"));
+		help.append(getMessage("extra_help_2"));
+		help.append(getMessage("extra_help_3"));
+
+		return Util.toList(help.toString());
 	}
 
 	/**

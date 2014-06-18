@@ -18,6 +18,7 @@ public abstract class TeamSparkleCommand extends Command
 	{
 		super(plugin);
 		this.plugin = plugin;
+		this.usesPrefix = true;
 	}
 
 	protected final PlayerData getPlayerData(OfflinePlayer target)
