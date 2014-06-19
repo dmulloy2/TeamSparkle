@@ -17,6 +17,7 @@
  */
 package net.dmulloy2.teamsparkle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
@@ -41,7 +42,6 @@ import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.types.Reloadable;
-import net.dmulloy2.types.StringJoiner;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.TimeUtil;
 import net.dmulloy2.util.Util;
@@ -305,12 +305,14 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	@Override
 	public List<String> getExtraHelp()
 	{
-		StringJoiner help = new StringJoiner(" ");
-		help.append(getMessage("extra_help_1"));
-		help.append(getMessage("extra_help_2"));
-		help.append(getMessage("extra_help_3"));
+		List<String> ret = new ArrayList<>();
 
-		return Util.toList(help.toString());
+		ret.add(FormatUtil.format(getMessage("extra_help_1")));
+		ret.add(FormatUtil.format(getMessage("extra_help_2")));
+		ret.add(FormatUtil.format(getMessage("extra_help_3")));
+		ret.add(FormatUtil.format(getMessage("extra_help_4")));
+
+		return ret;
 	}
 
 	/**

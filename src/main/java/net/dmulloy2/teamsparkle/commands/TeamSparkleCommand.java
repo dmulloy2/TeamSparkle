@@ -13,7 +13,6 @@ import org.bukkit.OfflinePlayer;
 public abstract class TeamSparkleCommand extends Command
 {
 	protected final TeamSparkle plugin;
-
 	public TeamSparkleCommand(TeamSparkle plugin)
 	{
 		super(plugin);
