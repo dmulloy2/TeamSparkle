@@ -33,7 +33,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 		this.name = "lb";
 		this.aliases.add("top");
 		this.description = "Display top sparklers";
-
+		this.mustBePlayer = true;
 		this.usesPrefix = true;
 	}
 
@@ -48,23 +48,20 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 		if (leaderboard == null)
 		{
-			this.leaderboard = new ArrayList<String>();
+			this.leaderboard = new ArrayList<>();
 		}
 
-		if ((System.currentTimeMillis() - lastUpdateTime) > 600000L || leaderboard.isEmpty())
+		if (System.currentTimeMillis() - lastUpdateTime > 600000L)
 		{
-			sendpMessage(getMessage("leaderboard_wait"));
-			
-			leaderboard.clear();
-			updating = true;
-
+			sendMessage(plugin.getMessage("leaderboard_wait"));
+			this.updating = true;
 			new BuildLeaderboardThread();
 		}
 
-		new DisplayLeaderboardThread(sender.getName());
+		new DisplayLeaderboardThread(sender.getName(), args);
 	}
 
-	public void displayLeaderboard(String playerName)
+	public void displayLeaderboard(String playerName, String[] args)
 	{
 		Player player = Util.matchPlayer(playerName);
 		if (player == null)
@@ -156,7 +153,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			long start = System.currentTimeMillis();
 
 			Map<String, PlayerData> allData = plugin.getPlayerDataCache().getAllPlayerData();
-			Map<PlayerData, Integer> sparkleMap = new HashMap<PlayerData, Integer>();
+			Map<PlayerData, Integer> sparkleMap = new HashMap<>();
 
 			for (Entry<String, PlayerData> entry : allData.entrySet())
 			{
@@ -173,7 +170,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				return;
 			}
 
-			List<Entry<PlayerData, Integer>> sortedEntries = new ArrayList<Entry<PlayerData, Integer>>(sparkleMap.entrySet());
+			List<Entry<PlayerData, Integer>> sortedEntries = new ArrayList<>(sparkleMap.entrySet());
 			Collections.sort(sortedEntries, new Comparator<Entry<PlayerData, Integer>>()
 			{
 				@Override
@@ -186,27 +183,23 @@ public class CmdLeaderboard extends TeamSparkleCommand
 			// Clear the map
 			sparkleMap.clear();
 
-			int pos = 1;
-			for (Entry<PlayerData, Integer> entry : sortedEntries)
+			// Reinitialize leaderboard
+			leaderboard = new ArrayList<>();
+
+			String format = getMessage("leaderboard_format");
+
+			for (int i = 0; i < sortedEntries.size(); i++)
 			{
 				try
 				{
-					PlayerData data = entry.getKey();
-					leaderboard.add(FormatUtil.format(getMessage("leaderboard_format"), pos, data.getLastKnownBy(), 
-							data.getTotalSparkles()));
-					pos++;
-				}
-				catch (Throwable ex)
-				{
-					// Swallow the exception, move on
-					continue;
-				}
+					PlayerData data = sortedEntries.get(i).getKey();
+					leaderboard.add(FormatUtil.format(format, i + 1, data.getLastKnownBy(), data.getTotalSparkles()));
+				} catch (Throwable ex) { }
 			}
 
 			sortedEntries.clear();
 
 			lastUpdateTime = System.currentTimeMillis();
-
 			updating = false;
 
 			plugin.outConsole("Leaderboard updated! [{0}ms]", System.currentTimeMillis() - start);
@@ -228,12 +221,14 @@ public class CmdLeaderboard extends TeamSparkleCommand
 
 	public class DisplayLeaderboardThread extends Thread
 	{
+		private final String[] args;
 		private final String playerName;
-		public DisplayLeaderboardThread(String playerName)
+		public DisplayLeaderboardThread(String playerName, String[] args)
 		{
 			super("TeamSparkle-DisplayLeaderboard");
 			this.setPriority(MIN_PRIORITY);
 			this.playerName = playerName;
+			this.args = args;
 			this.start();
 		}
 
@@ -247,7 +242,7 @@ public class CmdLeaderboard extends TeamSparkleCommand
 					sleep(500L);
 				}
 
-				displayLeaderboard(playerName);
+				displayLeaderboard(playerName, args);
 			}
 			catch (Throwable ex)
 			{
