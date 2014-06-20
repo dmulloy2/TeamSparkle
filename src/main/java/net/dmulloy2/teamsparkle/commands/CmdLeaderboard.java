@@ -193,7 +193,14 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				try
 				{
 					PlayerData data = sortedEntries.get(i).getKey();
-					leaderboard.add(FormatUtil.format(format, i + 1, data.getLastKnownBy(), data.getTotalSparkles()));
+
+					String space = "";
+					String name = data.getLastKnownBy();
+					for (int ii = name.length(); ii < 19; ii++)
+						space = space + " ";
+					name = name + space;
+
+					leaderboard.add(FormatUtil.format(format, i + 1, name, data.getTotalSparkles()));
 				} catch (Throwable ex) { }
 			}
 
