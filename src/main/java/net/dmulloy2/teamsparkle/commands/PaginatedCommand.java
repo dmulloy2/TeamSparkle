@@ -1,9 +1,9 @@
 package net.dmulloy2.teamsparkle.commands;
 
-import org.bukkit.OfflinePlayer;
-
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
+
+import org.bukkit.OfflinePlayer;
 
 /**
  * @author dmulloy2
