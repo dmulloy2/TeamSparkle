@@ -50,6 +50,6 @@ public class CmdInvite extends TeamSparkleCommand
 	private final boolean hasPlayedBefore(String name)
 	{
 		OfflinePlayer player = Util.matchOfflinePlayer(name);
-		return player == null || ! player.hasPlayedBefore();
+		return player != null && ! player.hasPlayedBefore();
 	}
 }
