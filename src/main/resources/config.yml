@@ -7,27 +7,27 @@
 # Where %p is the player's name
 # <message> appears on the shop list
 shopItems:
-  - "TNT":
+  "TNT":
     cost: 1
     icon: "TNT, 1"
     command: "give %p tnt 1"
-  - "God Bow":
+  "God Bow":
     cost: 5
     icon: "BOW, 1"
     command: "bmp give %p godbow"
-  - "God Sword":
+  "God Sword":
     cost: 8
     icon: "DIAMOND_SWORD, 1"
     command: "bmp give %p godsword"
-  - "God Pickaxe":
+  "God Pickaxe":
     cost: 10
     icon: "DIAMOND_PICKAXE, 1"
     command: "bmp give %p godpick"
-  - "Full God Armor":
+  "Full God Armor":
     cost: 15
     icon: "DIAMOND_CHESTPLATE, 1"
     command: "bmp give %p godarmor"
-  - "$20 Gift Certificate":
+  "$20 Gift Certificate":
     cost: 20
     icon: "EMERALD, 1"
     command: "mail send GarretSidzaka %p has sparkled 20 players"
