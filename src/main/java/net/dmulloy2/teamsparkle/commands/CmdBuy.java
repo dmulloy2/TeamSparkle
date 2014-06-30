@@ -1,5 +1,7 @@
 package net.dmulloy2.teamsparkle.commands;
 
+import org.bukkit.Material;
+
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
@@ -19,7 +21,6 @@ public class CmdBuy extends TeamSparkleCommand
 		this.requiredArgs.add("index");
 		this.description = "Purchace an item from the shop";
 		this.permission = Permission.CMD_BUY;
-
 		this.mustBePlayer = true;
 	}
 
@@ -29,7 +30,7 @@ public class CmdBuy extends TeamSparkleCommand
 		PlayerData data = getPlayerData(player);
 
 		int index = argAsInt(0, true);
-		if (index == - 1)
+		if (index == -1)
 			return;
 
 		ShopItem item = plugin.getShopHandler().getItem(index);
@@ -47,6 +48,13 @@ public class CmdBuy extends TeamSparkleCommand
 
 		plugin.getShopHandler().processPurchace(player, item);
 
-		sendpMessage(getMessage("shop_purchace"), 1, item.getMessage(), item.getCost());
+		sendpMessage(getMessage("shop_purchace"), 1, item.getTitle(), item.getCost());
+	}
+
+	@Override
+	public Material getHelpMaterial()
+	{
+		// Don't display in help menu
+		return null;
 	}
 }

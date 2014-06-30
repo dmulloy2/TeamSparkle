@@ -5,6 +5,7 @@ import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.util.Util;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -49,5 +50,12 @@ public class CmdGive extends TeamSparkleCommand
 
 		data.setTokens(data.getTokens() + tokens);
 		sendpMessage(getMessage("give_tokens"), tokens, target.getName());
+	}
+
+	@Override
+	public Material getHelpMaterial()
+	{
+		// Don't show in the help menu
+		return null;
 	}
 }

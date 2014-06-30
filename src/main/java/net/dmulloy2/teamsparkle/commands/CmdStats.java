@@ -5,6 +5,7 @@ import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.util.Util;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -66,5 +67,11 @@ public class CmdStats extends TeamSparkleCommand
 		sendMessage(getMessage("stats_header"), target.getName());
 		sendMessage(getMessage("stats_sparkles"), data.getTotalSparkles());
 		sendMessage(getMessage("stats_tokens"), data.getTokens());
+	}
+
+	@Override
+	public Material getHelpMaterial()
+	{
+		return Material.BOOK;
 	}
 }

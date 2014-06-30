@@ -3,6 +3,7 @@ package net.dmulloy2.teamsparkle.commands;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -27,4 +28,6 @@ public abstract class PaginatedCommand extends net.dmulloy2.commands.PaginatedCo
 	{
 		return plugin.getMessage(key);
 	}
+
+	public abstract Material getHelpMaterial();
 }

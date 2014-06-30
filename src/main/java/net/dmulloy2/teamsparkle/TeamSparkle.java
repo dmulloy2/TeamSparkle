@@ -17,7 +17,7 @@
  */
 package net.dmulloy2.teamsparkle;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
@@ -25,13 +25,14 @@ import java.util.logging.Level;
 
 import lombok.Getter;
 import net.dmulloy2.SwornPlugin;
-import net.dmulloy2.commands.CmdHelp;
+import net.dmulloy2.gui.GUIHandler;
 import net.dmulloy2.handlers.CommandHandler;
 import net.dmulloy2.handlers.LogHandler;
 import net.dmulloy2.handlers.PermissionHandler;
 import net.dmulloy2.handlers.ResourceHandler;
 import net.dmulloy2.teamsparkle.commands.CmdBuy;
 import net.dmulloy2.teamsparkle.commands.CmdGive;
+import net.dmulloy2.teamsparkle.commands.CmdHelp;
 import net.dmulloy2.teamsparkle.commands.CmdInvite;
 import net.dmulloy2.teamsparkle.commands.CmdLeaderboard;
 import net.dmulloy2.teamsparkle.commands.CmdReload;
@@ -104,6 +105,8 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
+		GUIHandler.registerEvents(this);
+
 		/** Deploy Auto Save task **/
 		if (getConfig().getBoolean("autoSave.enabled"))
 		{
@@ -124,9 +127,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		if (! getConfig().getStringList("hourlyRewards").isEmpty())
 			new HourlyRewardTask().runTaskTimerAsynchronously(this, interval, interval);
 
-		long finish = System.currentTimeMillis();
-
-		outConsole(getMessage("log_enabled"), getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
 	@Override
@@ -137,15 +138,11 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		/** Save Data **/
 		playerDataCache.save();
 
-		shopHandler.onDisable();
-
 		/** Cancel tasks / services **/
 		getServer().getServicesManager().unregisterAll(this);
 		getServer().getScheduler().cancelTasks(this);
 
-		long finish = System.currentTimeMillis();
-
-		outConsole(getMessage("log_disabled"), getDescription().getFullName(), finish - start);
+		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
 	/** Console logging **/
@@ -186,8 +183,8 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		}
 		catch (MissingResourceException ex)
 		{
-			outConsole(Level.WARNING, getMessage("log_message_missing"), string);
-			return null;
+			logHandler.log(Level.WARNING, getMessage("log_message_missing"), string);
+			return FormatUtil.format("(Missing message: {0})", string);
 		}
 	}
 
@@ -204,6 +201,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	private final String getSparkler(Player player)
 	{
+		System.out.println("getting sparkler of " + player.getName());
 		// This won't be performance intensive, since only players with data get saved
 		for (Entry<String, PlayerData> entry : playerDataCache.getAllPlayerData().entrySet())
 		{
@@ -223,11 +221,13 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	 */
 	public final void handleSparkle(Player player)
 	{
-		String name = getSparkler(player);
-		if (name == null) return;
+		String uniqueId = getSparkler(player);
+		if (uniqueId == null)
+			return;
 
-		OfflinePlayer sparkler = Util.matchOfflinePlayer(name);
-		if (sparkler == null) return;
+		OfflinePlayer sparkler = Util.matchOfflinePlayer(uniqueId);
+		if (sparkler == null)
+			return;
 
 		logHandler.log("Handling {0}''s sparkle of {1}", sparkler.getName(), player.getName());
 
@@ -241,11 +241,11 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 				if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
 				{
 					// Oh no, something went wrong >:(
-					outConsole(Level.WARNING, "Could not execute command \"{0}\"", command);
+					logHandler.log(Level.WARNING, "Could not execute command \"{0}\"", command);
 				}
 				else
 				{
-					debug("Executed command \"{0}\"", command);
+					logHandler.debug("Executed command \"{0}\"", command);
 				}
 			}
 		}
@@ -255,9 +255,10 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 		// Reward the sparkler
 		PlayerData data = playerDataCache.getData(sparkler);
-		if (data == null) return;
+		if (data == null)
+			return;
 
-		data.getInvited().remove(player.getName());
+		data.getInvited().remove(player.getName().toLowerCase());
 		data.setTotalSparkles(data.getTotalSparkles() + 1);
 		data.setTokens(data.getTokens() + 1);
 
@@ -302,18 +303,25 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		return string;
 	}
 
+	private List<String> extraHelp;
+
 	@Override
 	public List<String> getExtraHelp()
 	{
-		List<String> ret = new ArrayList<>();
+		if (extraHelp == null)
+		{
+			extraHelp = Arrays.asList(
+					FormatUtil.format(getMessage("extra_help_1")),
+					FormatUtil.format(getMessage("extra_help_2")),
+					FormatUtil.format(getMessage("extra_help_3")),
+					FormatUtil.format(getMessage("extra_help_4"))
+			);
+		}
 
-		ret.add(FormatUtil.format(getMessage("extra_help_1")));
-		ret.add(FormatUtil.format(getMessage("extra_help_2")));
-		ret.add(FormatUtil.format(getMessage("extra_help_3")));
-		ret.add(FormatUtil.format(getMessage("extra_help_4")));
-
-		return ret;
+		return extraHelp;
 	}
+
+	private @Getter CmdHelp helpCommand = new CmdHelp(this);
 
 	/**
 	 * Hourly Reward Task

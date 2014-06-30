@@ -14,6 +14,7 @@ import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -30,8 +31,8 @@ public class CmdLeaderboard extends TeamSparkleCommand
 	public CmdLeaderboard(TeamSparkle plugin)
 	{
 		super(plugin);
-		this.name = "lb";
-		this.aliases.add("top");
+		this.name = "leaderboard";
+		this.aliases.add("lb");
 		this.description = "Display top sparklers";
 		this.mustBePlayer = true;
 		this.usesPrefix = true;
@@ -260,5 +261,11 @@ public class CmdLeaderboard extends TeamSparkleCommand
 				plugin.getLogHandler().log(Level.WARNING, Util.getUsefulStack(ex, "updating leaderboard"));
 			}
 		}
+	}
+
+	@Override
+	public Material getHelpMaterial()
+	{
+		return Material.FIREWORK;
 	}
 }

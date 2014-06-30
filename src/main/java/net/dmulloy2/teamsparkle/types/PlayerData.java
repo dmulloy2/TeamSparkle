@@ -116,4 +116,9 @@ public class PlayerData implements ConfigurationSerializable
 	{
 		return tokens > 0 || totalSparkles > 0 || ! invited.isEmpty();
 	}
+
+	public final boolean canAfford(ShopItem item)
+	{
+		return tokens >= item.getCost();
+	}
 }

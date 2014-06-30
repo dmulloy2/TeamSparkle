@@ -1,5 +1,7 @@
 package net.dmulloy2.teamsparkle.commands;
 
+import org.bukkit.Material;
+
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 
@@ -21,15 +23,19 @@ public class CmdReload extends TeamSparkleCommand
 	@Override
 	public void perform()
 	{
-		sendMessage(getMessage("reloading"));
-
 		long start = System.currentTimeMillis();
+		sendpMessage(getMessage("reloading"));
 
 		plugin.reload();
 
-		long finish = System.currentTimeMillis();
+		sendpMessage(getMessage("reload_complete"), System.currentTimeMillis() - start);
+		plugin.getLogHandler().log("Reloaded TeamSparkle. Took {0} ms!", System.currentTimeMillis() - start);
+	}
 
-		sendMessage(getMessage("reload_complete"), finish - start);
-		plugin.getLogHandler().log("Reloaded TeamSparkle. Took {0} ms!", finish - start);
+	@Override
+	public Material getHelpMaterial()
+	{
+		// Don't show in the help menu
+		return null;
 	}
 }

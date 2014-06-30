@@ -7,13 +7,39 @@
 # Where %p is the player's name
 # <message> appears on the shop list
 shopItems:
+  - "TNT":
+    cost: 1
+    icon: "TNT, 1"
+    command: "give %p tnt 1"
+  - "God Bow":
+    cost: 5
+    icon: "BOW, 1"
+    command: "bmp give %p godbow"
+  - "God Sword":
+    cost: 8
+    icon: "DIAMOND_SWORD, 1"
+    command: "bmp give %p godsword"
+  - "God Pickaxe":
+    cost: 10
+    icon: "DIAMOND_PICKAXE, 1"
+    command: "bmp give %p godpick"
+  - "Full God Armor":
+    cost: 15
+    icon: "DIAMOND_CHESTPLATE, 1"
+    command: "bmp give %p godarmor"
+  - "$20 Gift Certificate":
+    cost: 20
+    icon: "EMERALD, 1"
+    command: "mail send GarretSidzaka %p has sparkled 20 players"
 
 # Reward for Sparkled player
 # List ("<command>")
 # Example: "give %p diamond 1"
 # Where %p is the player's name
 # <message> is sent to the player
-sparkledRewards:
+sparkledRewards: 
+  - "bm give %p sharpsword"
+  - "give %p tnt 64"
 
 # Hourly reward for players
 # List ("<command>;<message>")
@@ -21,20 +47,53 @@ sparkledRewards:
 # Where %p is the player's name
 # <message> is sent to the player
 hourlyRewards:
+  - "give %p diamond 5;5 diamonds"
+  - "give %p obsidian 5;5 obby"
+  - "give %p goldingot 5;5 gold"
+  - "give %p saddle 5;5 saddles"
+  - "give %p ironblock 1;1 iron block"
+  - "give %p diamondpick 1;1 diamond pick"
+  - "give %p diamondsword 1;1 diamond sword"
+  - "give %p diamondchestplate 1;1 diamond chestplate"
+  - "give %p diamondboots 1;1 diamond boots"
+  - "give %p diamondleggings 1;1 diamond leggings"
+  - "give %p diamondhelmet 1;1 diamond helmet"
+  - "give %p diamondblock 1;1 diamond block"
+  - "give %p emerald 1;1 emerald"
+  - "give %p seed 32;32 seeds"
+  - "give %p flint 32;32 flint"
+  - "give %p clay_ball 32;32 clayball"
+  - "give %p bonemeal 32;32 bonemeal"
+  - "give %p anvil 1;1 anvil"
+  - "give %p sponge 1; 1 sponge"
+  - "give %p cake 3;cake"
+  - "give %p cooked_chicken 8;chicken"
+  - "give %p enchantment_table 1;enchant table"
+  - "give %p glowstone 32;glowstone"
+  - "give %p diamondspade 1;shovel"
+  - "give %p diamondaxe 1;axe"
+  - "give %p goldblock 1;gold"  
+  - "give %p record_mellohi 1;mellohi"
+  - "give %p record_stal 1;stal"
+  - "give %p record_ward 1;ward"
+  - "give %p record_wait 1;wait"
+  - "give %p record_blocks 1;blocks"
+  - "give %p record_chirp 1;chirp"
+  - "give %p record_far 1;far"
+  - "give %p record_mall 1;mall"
+  - "give %p record_strad 1;strad"
 
 # AutoSave task
 # enabled - boolean
 # interval - int (minutes)
 autoSave:
   enabled: true
-  interval: 15
+  interval: 120
   
 # Name of the server
 # name - string
-serverName: "The Server"
-
-# Whether or not to check for matching IP's
-checkIPs: true
+serverName: "MineSworn"
 
 # Debugging
-debug: false
+# debug - boolean
+debug: fa;se

@@ -4,6 +4,7 @@ import net.dmulloy2.commands.Command;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 /**
@@ -29,4 +30,6 @@ public abstract class TeamSparkleCommand extends Command
 	{
 		return plugin.getMessage(key);
 	}
+
+	public abstract Material getHelpMaterial();
 }

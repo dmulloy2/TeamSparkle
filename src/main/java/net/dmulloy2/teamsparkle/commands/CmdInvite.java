@@ -1,11 +1,13 @@
 package net.dmulloy2.teamsparkle.commands;
 
 import net.dmulloy2.teamsparkle.TeamSparkle;
+import net.dmulloy2.teamsparkle.conversation.InvitePrompt;
+import net.dmulloy2.teamsparkle.conversation.Prefix;
 import net.dmulloy2.teamsparkle.types.Permission;
-import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.util.Util;
 
-import org.bukkit.OfflinePlayer;
+import org.bukkit.Material;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationFactory;
 
 /**
  * @author dmulloy2
@@ -17,39 +19,25 @@ public class CmdInvite extends TeamSparkleCommand
 	{
 		super(plugin);
 		this.name = "invite";
-		this.requiredArgs.add("player");
 		this.description = "Invite a newly sparkled player";
 		this.permission = Permission.CMD_INVITE;
-
 		this.mustBePlayer = true;
 	}
 
 	@Override
 	public void perform()
 	{
-		String name = args[0];
-		if (hasPlayedBefore(name))
-		{
-			err(getMessage("has_played_before"));
-			return;
-		}
-
-		PlayerData data = getPlayerData(player);
-
-		if (data.getInvited().contains(name))
-		{
-			err(getMessage("already_invited"));
-			return;
-		}
-
-		data.getInvited().add(args[0]);
-
-		sendpMessage(getMessage("invite_confirmed"), name);
+		InvitePrompt prompt = new InvitePrompt(player, plugin);
+		Conversation convo = new ConversationFactory(plugin)
+			.withFirstPrompt(prompt)
+			.withPrefix(new Prefix(plugin))
+			.buildConversation(player);
+		convo.begin();
 	}
 
-	private final boolean hasPlayedBefore(String name)
+	@Override
+	public Material getHelpMaterial()
 	{
-		OfflinePlayer player = Util.matchOfflinePlayer(name);
-		return player != null && ! player.hasPlayedBefore();
+		return Material.SKULL_ITEM;
 	}
 }

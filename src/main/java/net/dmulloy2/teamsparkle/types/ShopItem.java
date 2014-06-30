@@ -3,6 +3,8 @@ package net.dmulloy2.teamsparkle.types;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import org.bukkit.inventory.ItemStack;
+
 /**
  * @author dmulloy2
  */
@@ -12,6 +14,12 @@ import lombok.Getter;
 public class ShopItem
 {
 	private final int cost;
+	private final ItemStack icon;
+	private final String title;
 	private final String command;
-	private final String message;
+
+	public final ItemStack getIcon()
+	{
+		return new ItemStack(icon.getType());
+	}
 }
