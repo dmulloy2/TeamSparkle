@@ -201,7 +201,6 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	private final String getSparkler(Player player)
 	{
-		System.out.println("getting sparkler of " + player.getName());
 		// This won't be performance intensive, since only players with data get saved
 		for (Entry<String, PlayerData> entry : playerDataCache.getAllPlayerData().entrySet())
 		{
