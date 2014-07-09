@@ -1,11 +1,11 @@
 package net.dmulloy2.teamsparkle.commands;
 
-import org.bukkit.Material;
-
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.Permission;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.teamsparkle.types.ShopItem;
+
+import org.bukkit.Material;
 
 /**
  * @author dmulloy2
