@@ -170,7 +170,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	/**
 	 * Gets a message with a given key from the messages.properties
-	 * 
+	 *
 	 * @param string
 	 *        - Message key
 	 * @return Associated message, or null if nonexistant
@@ -190,7 +190,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	/**
 	 * Whether or not a given player was sparkled
-	 * 
+	 *
 	 * @param player
 	 *        - Player to check
 	 */
@@ -214,7 +214,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	/**
 	 * Handles the sparkle of a given player
-	 * 
+	 *
 	 * @param player
 	 *        - Player who was sparkled
 	 */
@@ -270,7 +270,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	/**
 	 * Gives a player an item, then refreshes their inventory
-	 * 
+	 *
 	 * @param player
 	 *        - {@link Player} to give item to
 	 * @param stack
@@ -285,7 +285,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 	/**
 	 * Replaces variables for player names
-	 * 
+	 *
 	 * @param string
 	 *        - Base string to format
 	 * @param player
@@ -332,7 +332,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		{
 			String message = getMessage("hourly_reward");
 			String serverName = getConfig().getString("serverName");
-			for (Player player : getServer().getOnlinePlayers())
+			for (Player player : Util.getOnlinePlayers())
 			{
 				List<String> rewards = getConfig().getStringList("hourlyRewards");
 				if (! rewards.isEmpty())
