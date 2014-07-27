@@ -44,6 +44,7 @@ import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
 import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
+import net.dmulloy2.util.InventoryUtil;
 import net.dmulloy2.util.TimeUtil;
 import net.dmulloy2.util.Util;
 
@@ -171,8 +172,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	/**
 	 * Gets a message with a given key from the messages.properties
 	 *
-	 * @param string
-	 *        - Message key
+	 * @param string Message key
 	 * @return Associated message, or null if nonexistant
 	 */
 	public final String getMessage(String string)
@@ -191,8 +191,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	/**
 	 * Whether or not a given player was sparkled
 	 *
-	 * @param player
-	 *        - Player to check
+	 * @param player Player to check
 	 */
 	public final boolean isSparkled(Player player)
 	{
@@ -215,8 +214,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	/**
 	 * Handles the sparkle of a given player
 	 *
-	 * @param player
-	 *        - Player who was sparkled
+	 * @param player Player who was sparkled
 	 */
 	public final void handleSparkle(Player player)
 	{
@@ -271,25 +269,20 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	/**
 	 * Gives a player an item, then refreshes their inventory
 	 *
-	 * @param player
-	 *        - {@link Player} to give item to
-	 * @param stack
-	 *        - {@link ItemStack} to give the player
+	 * @param player {@link Player} to give item to
+	 * @param stack {@link ItemStack} to give the player
 	 */
-	@SuppressWarnings("deprecation")
 	public final void giveItem(Player player, ItemStack stack)
 	{
-		player.getInventory().addItem(stack);
+		InventoryUtil.giveItem(player, stack);
 		player.updateInventory();
 	}
 
 	/**
 	 * Replaces variables for player names
 	 *
-	 * @param string
-	 *        - Base string to format
-	 * @param player
-	 *        - {@link Player} to replace vars for
+	 * @param string Base string to format
+	 * @param player {@link Player} to replace vars for
 	 */
 	public final String replacePlayerVars(String string, Player player)
 	{
@@ -309,12 +302,10 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	{
 		if (extraHelp == null)
 		{
-			extraHelp = Arrays.asList(
-					FormatUtil.format(getMessage("extra_help_1")),
+			extraHelp = Arrays.asList(FormatUtil.format(getMessage("extra_help_1")),
 					FormatUtil.format(getMessage("extra_help_2")),
 					FormatUtil.format(getMessage("extra_help_3")),
-					FormatUtil.format(getMessage("extra_help_4"))
-			);
+					FormatUtil.format(getMessage("extra_help_4")));
 		}
 
 		return extraHelp;
