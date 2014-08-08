@@ -50,9 +50,8 @@ public class ShopGUI extends AbstractGUI
 	}
 
 	@Override
-	public void onInventoryClick(InventoryClickEvent event)
+	public void onInventoryClick(Player player, InventoryClickEvent event)
 	{
-		Player player = (Player) event.getInventory().getHolder();
 		ItemStack item = event.getCurrentItem();
 		if (item != null)
 		{
@@ -64,7 +63,7 @@ public class ShopGUI extends AbstractGUI
 			}
 		}
 
-		event.setCancelled(true);		
+		event.setCancelled(true);
 	}
 
 	private final ShopItem getShopItem(Material mat)

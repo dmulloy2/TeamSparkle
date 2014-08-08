@@ -92,9 +92,8 @@ public class HelpCommandGUI extends AbstractGUI
 	}
 
 	@Override
-	public void onInventoryClick(InventoryClickEvent event)
+	public void onInventoryClick(Player player, InventoryClickEvent event)
 	{
-		Player player = (Player) event.getInventory().getHolder();
 		ItemStack item = event.getCurrentItem();
 		if (item != null)
 		{
@@ -106,7 +105,7 @@ public class HelpCommandGUI extends AbstractGUI
 			}
 		}
 
-		event.setCancelled(true);		
+		event.setCancelled(true);
 	}
 
 	private final Command getCommand(Material mat)
