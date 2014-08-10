@@ -50,7 +50,7 @@ public class ShopGUI extends AbstractGUI
 	}
 
 	@Override
-	public void onInventoryClick(Player player, InventoryClickEvent event)
+	public void onInventoryClick(InventoryClickEvent event)
 	{
 		ItemStack item = event.getCurrentItem();
 		if (item != null)
