@@ -12,8 +12,8 @@ import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.commands.PaginatedCommand;
 import net.dmulloy2.teamsparkle.commands.TeamSparkleCommand;
 import net.dmulloy2.util.FormatUtil;
-import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

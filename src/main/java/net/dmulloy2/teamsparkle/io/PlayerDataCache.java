@@ -20,6 +20,8 @@ import net.dmulloy2.io.FileSerialization;
 import net.dmulloy2.io.UUIDFetcher;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
+import net.dmulloy2.types.Versioning;
+import net.dmulloy2.types.Versioning.Version;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.Util;
 
@@ -216,6 +218,9 @@ public class PlayerDataCache
 		if (updated.exists())
 			return;
 
+		if (Versioning.getVersion() == Version.MC_16)
+			return;
+
 		long start = System.currentTimeMillis();
 		plugin.getLogHandler().log("Checking for unconverted files");
 
@@ -324,6 +329,9 @@ public class PlayerDataCache
 
 	private final String getKey(OfflinePlayer player)
 	{
+		if (Versioning.getVersion() == Version.MC_16)
+			return player.getName();
+
 		return player.getUniqueId().toString();
 	}
 
