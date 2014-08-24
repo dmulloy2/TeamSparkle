@@ -17,10 +17,10 @@
  */
 package net.dmulloy2.teamsparkle;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.MissingResourceException;
 import java.util.logging.Level;
 
 import lombok.Getter;
@@ -81,10 +81,14 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		saveDefaultConfig();
 		reloadConfig();
 
-		/** Register Handlers **/
-		saveResource("messages.properties", true);
+		/** Messages **/
+		File messages = new File(getDataFolder(), "messages.properties");
+		if (messages.exists())
+			messages.delete();
+
 		resourceHandler = new ResourceHandler(this, getClassLoader());
 
+		/** Register Handlers **/
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		shopHandler = new ShopHandler(this);
@@ -177,15 +181,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	 */
 	public final String getMessage(String string)
 	{
-		try
-		{
-			return resourceHandler.getMessages().getString(string);
-		}
-		catch (MissingResourceException ex)
-		{
-			logHandler.log(Level.WARNING, getMessage("log_message_missing"), string);
-			return FormatUtil.format("(Missing message: {0})", string);
-		}
+		return resourceHandler.getMessage(string);
 	}
 
 	/**
