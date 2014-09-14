@@ -65,7 +65,7 @@ hourlyRewards:
   - "give %p clay_ball 32;32 clayball"
   - "give %p bonemeal 32;32 bonemeal"
   - "give %p anvil 1;1 anvil"
-  - "give %p sponge 1; 1 sponge"
+  - "give %p sponge 1;1 sponge"
   - "give %p cake 3;cake"
   - "give %p cooked_chicken 8;chicken"
   - "give %p enchantment_table 1;enchant table"
@@ -92,7 +92,7 @@ autoSave:
   
 # Name of the server
 # name - string
-serverName: "MineSworn"
+serverName: "The Server"
 
 # Debugging
 # debug - boolean
