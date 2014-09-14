@@ -30,7 +30,7 @@ shopItems:
   "$20 Gift Certificate":
     cost: 20
     icon: "EMERALD, 1"
-    command: "mail send GarretSidzaka %p has sparkled 20 players"
+    command: "mail send [server owner] %p has sparkled 20 players"
 
 # Reward for Sparkled player
 # List ("<command>")
