@@ -96,4 +96,4 @@ serverName: "The Server"
 
 # Debugging
 # debug - boolean
-debug: fa;se
+debug: false
