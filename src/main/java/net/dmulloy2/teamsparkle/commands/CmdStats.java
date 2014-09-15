@@ -20,7 +20,7 @@ public class CmdStats extends TeamSparkleCommand
 		super(plugin);
 		this.name = "stats";
 		this.aliases.add("info");
-		this.optionalArgs.add("player");
+		this.addOptionalArg("player");
 		this.description = "Check your sparkly stats";
 		this.permission = Permission.CMD_STATS;
 

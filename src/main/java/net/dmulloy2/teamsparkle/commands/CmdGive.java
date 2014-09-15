@@ -19,8 +19,8 @@ public class CmdGive extends TeamSparkleCommand
 		super(plugin);
 		this.name = "give";
 		this.aliases.add("givetokens");
-		this.requiredArgs.add("player");
-		this.requiredArgs.add("tokens");
+		this.addRequiredArg("player");
+		this.addRequiredArg("tokens");
 		this.description = "Manually give tokens";
 		this.permission = Permission.CMD_GIVE;
 

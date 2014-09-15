@@ -18,7 +18,7 @@ public class CmdBuy extends TeamSparkleCommand
 		super(plugin);
 		this.name = "buy";
 		this.aliases.add("b");
-		this.requiredArgs.add("index");
+		this.addRequiredArg("index");
 		this.description = "Purchace an item from the shop";
 		this.permission = Permission.CMD_BUY;
 		this.mustBePlayer = true;

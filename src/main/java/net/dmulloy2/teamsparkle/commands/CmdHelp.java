@@ -20,7 +20,7 @@ public class CmdHelp extends TeamSparkleCommand
 	{
 		super(plugin);
 		this.name = "help";
-		this.optionalArgs.add("page");
+		this.addOptionalArg("page");
 		this.description = "Displays TeamSparkle help";
 	}
 
