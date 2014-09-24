@@ -3,7 +3,6 @@
  */
 package net.dmulloy2.teamsparkle.commands;
 
-import net.dmulloy2.gui.GUIHandler;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.gui.HelpCommandGUI;
 
@@ -30,7 +29,7 @@ public class CmdHelp extends TeamSparkleCommand
 		if (sender instanceof Player)
 		{
 			HelpCommandGUI hcGUI = new HelpCommandGUI(plugin, player);
-			GUIHandler.openGUI(player, hcGUI);
+			plugin.getGuiHandler().open(player, hcGUI);
 			return;
 		}
 

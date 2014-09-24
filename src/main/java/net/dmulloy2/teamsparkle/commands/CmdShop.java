@@ -1,6 +1,5 @@
 package net.dmulloy2.teamsparkle.commands;
 
-import net.dmulloy2.gui.GUIHandler;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.gui.ShopGUI;
 import net.dmulloy2.teamsparkle.types.Permission;
@@ -26,7 +25,7 @@ public class CmdShop extends TeamSparkleCommand
 	public void perform()
 	{
 		ShopGUI sGUI = new ShopGUI(plugin, player);
-		GUIHandler.openGUI(player, sGUI);
+		plugin.getGuiHandler().open(player, sGUI);
 	}
 
 	@Override

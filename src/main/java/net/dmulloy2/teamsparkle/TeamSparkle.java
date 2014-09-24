@@ -63,6 +63,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	/** Handlers **/
 	private @Getter ResourceHandler resourceHandler;
 	private @Getter ShopHandler shopHandler;
+	private @Getter GUIHandler guiHandler;
 
 	/** Data Cache **/
 	private @Getter PlayerDataCache playerDataCache;
@@ -92,6 +93,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		shopHandler = new ShopHandler(this);
+		guiHandler = new GUIHandler(this);
 
 		playerDataCache = new PlayerDataCache(this);
 
@@ -109,8 +111,6 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		/** Register Listener **/
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
-
-		GUIHandler.registerEvents(this);
 
 		/** Deploy Auto Save task **/
 		if (getConfig().getBoolean("autoSave.enabled"))
