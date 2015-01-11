@@ -136,7 +136,7 @@ public class PlayerDataCache
 		}
 		catch (Throwable ex)
 		{
-			plugin.outConsole(Level.WARNING, "Failed to load player data for {0}!", key);
+			plugin.getLogHandler().log(Level.WARNING, Util.getUsefulStack(ex, "loading data for {0}", key));
 			return null;
 		}
 	}
@@ -144,19 +144,30 @@ public class PlayerDataCache
 	public final void save()
 	{
 		long start = System.currentTimeMillis();
-		plugin.outConsole("Saving {0} to disk...", folderName);
+		plugin.outConsole("Saving players to disk...");
 
 		for (Entry<String, PlayerData> entry : getAllLoadedPlayerData().entrySet())
 		{
-			PlayerData data = entry.getValue();
-			File file = new File(folder, getFileName(entry.getKey()));
-
-			// Dynamic saving
-			if (data.shouldBeSaved())
-				FileSerialization.save(entry.getValue(), file);
-			else
-				if (file.exists())
-					file.delete();
+			try
+			{
+				PlayerData data = entry.getValue();
+				File file = new File(folder, getFileName(entry.getKey()));
+	
+				// Dynamically save data
+				if (data.shouldBeSaved())
+				{
+					FileSerialization.save(entry.getValue(), file);
+				}
+				else
+				{
+					if (file.exists())
+						file.delete();
+				}
+			}
+			catch (Throwable ex)
+			{
+				 plugin.outConsole(Level.WARNING, Util.getUsefulStack(ex, "saving data for {0}", entry.getKey()));
+			}
 		}
 
 		plugin.outConsole("Players saved! [{0} ms]", System.currentTimeMillis() - start);
@@ -286,7 +297,7 @@ public class PlayerDataCache
 					}
 					catch (Throwable ex)
 					{
-						plugin.getLogHandler().log(Level.WARNING, "Failed to convert " + entry.getKey());
+						plugin.getLogHandler().log(Level.WARNING, Util.getUsefulStack(ex, "converting {0}", entry.getKey()));
 					}
 				}
 			}
