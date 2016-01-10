@@ -32,7 +32,7 @@ public class PlayerListener implements Listener
 				@Override
 				public void run()
 				{
-					if (player != null && player.isOnline())
+					if (player.isOnline())
 					{
 						plugin.handleSparkle(player);
 					}

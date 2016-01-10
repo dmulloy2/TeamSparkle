@@ -83,6 +83,9 @@ hourlyRewards:
   - "give %p record_mall 1;mall"
   - "give %p record_strad 1;strad"
 
+# Whether or not hourly rewards are enabled
+hourlyRewardsEnabled: true
+
 # AutoSave task
 # enabled - boolean
 # interval - int (minutes)

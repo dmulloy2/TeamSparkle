@@ -42,7 +42,6 @@ import net.dmulloy2.teamsparkle.handlers.ShopHandler;
 import net.dmulloy2.teamsparkle.io.PlayerDataCache;
 import net.dmulloy2.teamsparkle.listeners.PlayerListener;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.types.Reloadable;
 import net.dmulloy2.util.FormatUtil;
 import net.dmulloy2.util.InventoryUtil;
 import net.dmulloy2.util.TimeUtil;
@@ -58,18 +57,19 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author dmulloy2
  */
 
-public class TeamSparkle extends SwornPlugin implements Reloadable
+@Getter
+public class TeamSparkle extends SwornPlugin
 {
-	/** Handlers **/
-	private @Getter ResourceHandler resourceHandler;
-	private @Getter ShopHandler shopHandler;
-	private @Getter GUIHandler guiHandler;
+	private ResourceHandler resourceHandler;
+	private ShopHandler shopHandler;
+	private GUIHandler guiHandler;
 
-	/** Data Cache **/
-	private @Getter PlayerDataCache playerDataCache;
+	private PlayerDataCache playerDataCache;
 
-	/** Global Prefix **/
-	private @Getter String prefix = FormatUtil.format("&3[&eTeamSparkle&3]&e ");
+	private int autoSaveTask = -1;
+	private int rewardTask = -1;
+
+	private String prefix = FormatUtil.format("&3[&eTeamSparkle&3]&e ");
 
 	@Override
 	public void onEnable()
@@ -78,18 +78,19 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 		logHandler = new LogHandler(this);
 
-		/** Configuration **/
+		// Configuration
 		saveDefaultConfig();
 		reloadConfig();
+		Config.load(this);
 
-		/** Messages **/
+		// Messages
 		File messages = new File(getDataFolder(), "messages.properties");
 		if (messages.exists())
 			messages.delete();
 
 		resourceHandler = new ResourceHandler(this, getClassLoader());
 
-		/** Register Handlers **/
+		// Register handlers
 		permissionHandler = new PermissionHandler(this);
 		commandHandler = new CommandHandler(this);
 		shopHandler = new ShopHandler(this);
@@ -97,7 +98,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 
 		playerDataCache = new PlayerDataCache(this);
 
-		/** Register Commands **/
+		// Register commands
 		commandHandler.setCommandPrefix("ts");
 		commandHandler.registerPrefixedCommand(new CmdBuy(this));
 		commandHandler.registerPrefixedCommand(new CmdGive(this));
@@ -108,29 +109,29 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		commandHandler.registerPrefixedCommand(new CmdShop(this));
 		commandHandler.registerPrefixedCommand(new CmdStats(this));
 
-		/** Register Listener **/
+		// Register listener
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 
-		/** Deploy Auto Save task **/
-		if (getConfig().getBoolean("autoSave.enabled"))
+		// Deploy auto save task
+		if (Config.autoSaveEnabled)
 		{
-			long interval = TimeUtil.toTicks(60 * getConfig().getInt("autoSave.interval"));
+			long interval = TimeUtil.toTicks(60 * Config.autoSaveInterval);
 
-			new BukkitRunnable()
+			autoSaveTask = new BukkitRunnable()
 			{
 				@Override
 				public void run()
 				{
 					playerDataCache.save();
 				}
-			}.runTaskTimerAsynchronously(this, interval, interval);
+			}.runTaskTimerAsynchronously(this, interval, interval).getTaskId();
 		}
 
-		/** Hourly Rewards **/
+		// Hourly rewards
 		long interval = TimeUtil.toTicks(60 * 60); // 1 hour
-		if (! getConfig().getStringList("hourlyRewards").isEmpty())
-			new HourlyRewardTask().runTaskTimerAsynchronously(this, interval, interval);
+		if (Config.hourlyRewardsEnabled && ! Config.hourlyRewards.isEmpty())
+			rewardTask = new HourlyRewardTask().runTaskTimerAsynchronously(this, interval, interval).getTaskId();
 
 		logHandler.log(getMessage("log_enabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
@@ -140,17 +141,16 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	{
 		long start = System.currentTimeMillis();
 
-		/** Save Data **/
+		// Save data
 		playerDataCache.save();
 
-		/** Cancel tasks / services **/
-		getServer().getServicesManager().unregisterAll(this);
-		getServer().getScheduler().cancelTasks(this);
+		// Cancel tasks
+		getServer().getScheduler().cancelTask(rewardTask);
+		getServer().getScheduler().cancelTask(autoSaveTask);
 
 		logHandler.log(getMessage("log_disabled"), getDescription().getFullName(), System.currentTimeMillis() - start);
 	}
 
-	/** Console logging **/
 	public void outConsole(String string, Object... objects)
 	{
 		logHandler.log(string, objects);
@@ -170,6 +170,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 	public void reload()
 	{
 		reloadConfig();
+		Config.load(this);
 		shopHandler.reload();
 	}
 
@@ -225,7 +226,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		logHandler.log("Handling {0}''s sparkle of {1}", sparkler.getName(), player.getName());
 
 		// Commands for newly sparkled players
-		List<String> commands = getConfig().getStringList("sparkledRewards");
+		List<String> commands = Config.sparkledRewards;
 		if (! commands.isEmpty())
 		{
 			for (String command : commands)
@@ -307,7 +308,7 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		return extraHelp;
 	}
 
-	private @Getter CmdHelp helpCommand = new CmdHelp(this);
+	private CmdHelp helpCommand = new CmdHelp(this);
 
 	/**
 	 * Hourly Reward Task
@@ -317,11 +318,18 @@ public class TeamSparkle extends SwornPlugin implements Reloadable
 		@Override
 		public void run()
 		{
+			if (! Config.hourlyRewardsEnabled)
+			{
+				getServer().getScheduler().cancelTask(rewardTask);
+				return;
+			}
+
 			String message = getMessage("hourly_reward");
-			String serverName = getConfig().getString("serverName");
+			String serverName = Config.serverName;
+
 			for (Player player : Util.getOnlinePlayers())
 			{
-				List<String> rewards = getConfig().getStringList("hourlyRewards");
+				List<String> rewards = Config.hourlyRewards;
 				if (! rewards.isEmpty())
 				{
 					int rand = Util.random(rewards.size());
