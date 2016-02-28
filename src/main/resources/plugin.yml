@@ -1,6 +1,6 @@
 name: TeamSparkle
 main: net.dmulloy2.teamsparkle.TeamSparkle
-version: ${project.version} (Build ${project.build.number})
+version: ${project.version}${project.build.number}
 author: dmulloy2
 description: Recruiting plugin that rewards players for bringing new players
 commands:

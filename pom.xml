@@ -8,7 +8,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.number>LOCAL</project.build.number>
+    <project.build.number></project.build.number>
   </properties>
 
   <repositories>
@@ -114,7 +114,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>0.12.0</version>
+      <version>1.16.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
