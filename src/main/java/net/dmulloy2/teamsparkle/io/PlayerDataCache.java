@@ -21,8 +21,6 @@ import net.dmulloy2.io.IOUtil;
 import net.dmulloy2.io.UUIDFetcher;
 import net.dmulloy2.teamsparkle.TeamSparkle;
 import net.dmulloy2.teamsparkle.types.PlayerData;
-import net.dmulloy2.types.Versioning;
-import net.dmulloy2.types.Versioning.Version;
 import net.dmulloy2.util.Util;
 
 import org.bukkit.OfflinePlayer;
@@ -86,7 +84,7 @@ public class PlayerDataCache
 
 	public final PlayerData getData(Player player)
 	{
-		PlayerData data = getData(getKey(player));
+		PlayerData data = getData(player.getUniqueId().toString());
 
 		// Online players always have data
 		if (data == null)
@@ -105,8 +103,8 @@ public class PlayerDataCache
 		if (player.isOnline())
 			return getData(player.getPlayer());
 
-		// Attempt to get by name
-		return getData(getKey(player));
+		// Attempt to get by uniqueId
+		return getData(player.getUniqueId().toString());
 	}
 
 	// ---- Data Management
@@ -123,7 +121,7 @@ public class PlayerDataCache
 
 	public final PlayerData newData(Player player)
 	{
-		return newData(getKey(player));
+		return newData(player.getUniqueId().toString());
 	}
 
 	private final PlayerData loadData(String key)
@@ -228,9 +226,6 @@ public class PlayerDataCache
 	{
 		File updated = new File(folder, ".updated");
 		if (updated.exists())
-			return;
-
-		if (Versioning.getVersion() == Version.MC_16)
 			return;
 
 		long start = System.currentTimeMillis();
@@ -338,14 +333,6 @@ public class PlayerDataCache
 	}
 
 	// ---- Util
-
-	private final String getKey(OfflinePlayer player)
-	{
-		if (Versioning.getVersion() == Version.MC_16)
-			return player.getName();
-
-		return player.getUniqueId().toString();
-	}
 
 	private final String getFileName(String key)
 	{

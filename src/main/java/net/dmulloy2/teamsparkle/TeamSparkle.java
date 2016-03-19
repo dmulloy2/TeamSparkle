@@ -47,7 +47,6 @@ import net.dmulloy2.util.InventoryUtil;
 import net.dmulloy2.util.TimeUtil;
 import net.dmulloy2.util.Util;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -195,14 +194,14 @@ public class TeamSparkle extends SwornPlugin
 		return getSparkler(player) != null;
 	}
 
-	private final String getSparkler(Player player)
+	private final Entry<String, PlayerData> getSparkler(Player player)
 	{
-		// This won't be performance intensive, since only players with data get saved
+		// Shouldn't be terribly performance intensive, since only players with data get saved
 		for (Entry<String, PlayerData> entry : playerDataCache.getAllPlayerData().entrySet())
 		{
 			PlayerData data = entry.getValue();
 			if (data.getInvited().contains(player.getName().toLowerCase()))
-				return entry.getKey();
+				return entry;
 		}
 
 		return null;
@@ -215,15 +214,14 @@ public class TeamSparkle extends SwornPlugin
 	 */
 	public final void handleSparkle(Player player)
 	{
-		String uniqueId = getSparkler(player);
-		if (uniqueId == null)
+		Entry<String, PlayerData> entry = getSparkler(player);
+		if (entry == null)
 			return;
 
-		OfflinePlayer sparkler = Util.matchOfflinePlayer(uniqueId);
-		if (sparkler == null)
-			return;
+		String uniqueId = player.getUniqueId().toString();
+		PlayerData data = entry.getValue();
 
-		logHandler.log("Handling {0}''s sparkle of {1}", sparkler.getName(), player.getName());
+		logHandler.log("Handling {0}''s sparkle of {1}", data.getLastKnownBy(), player.getName());
 
 		// Commands for newly sparkled players
 		List<String> commands = Config.sparkledRewards;
@@ -232,34 +230,31 @@ public class TeamSparkle extends SwornPlugin
 			for (String command : commands)
 			{
 				command = replacePlayerVars(command, player);
-				if (! getServer().dispatchCommand(getServer().getConsoleSender(), command))
+				if (getServer().dispatchCommand(getServer().getConsoleSender(), command))
 				{
-					// Oh no, something went wrong >:(
-					logHandler.log(Level.WARNING, "Could not execute command \"{0}\"", command);
+					logHandler.debug("Executed command \"{0}\"", command);
 				}
 				else
 				{
-					logHandler.debug("Executed command \"{0}\"", command);
+					// Rats
+					logHandler.log(Level.WARNING, "Failed to execute command \"{0}\"", command);
 				}
 			}
 		}
 
-		// Welcome them
+		// Welcome the new player
 		player.sendMessage(FormatUtil.format(getMessage("sparkled_welcome"), player.getName()));
 
 		// Reward the sparkler
-		PlayerData data = playerDataCache.getData(sparkler);
-		if (data == null)
-			return;
-
 		data.getInvited().remove(player.getName().toLowerCase());
 		data.setTotalSparkles(data.getTotalSparkles() + 1);
 		data.setTokens(data.getTokens() + 1);
 
-		// Thank the sparkler
-		if (sparkler.isOnline())
+		// Thank them if they're online
+		Player sparkler = Util.matchPlayer(uniqueId);
+		if (sparkler != null)
 		{
-			sparkler.getPlayer().sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), player.getName()));
+			sparkler.sendMessage(FormatUtil.format(getMessage("sparkler_thanks"), player.getName()));
 		}
 	}
 
